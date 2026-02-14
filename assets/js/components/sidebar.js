@@ -12,6 +12,30 @@ const FluentSidebar = {
         }
     },
 
+    getBasePath() {
+        const path = window.location.pathname;
+
+        // Level 2 directories
+        if (path.includes('/dashboard/student/') ||
+            path.includes('/dashboard/instructor/') ||
+            path.includes('/dashboard/admin/')) {
+            return '../..';
+        }
+
+        // Level 1 directories
+        if (path.includes('/course/') ||
+            path.includes('/lesson/') ||
+            path.includes('/auth/') ||
+            path.includes('/report/') ||
+            path.includes('/assignment/') ||
+            path.includes('/settings/')) {
+            return '..';
+        }
+
+        // Root or unknown (Level 0)
+        return '.';
+    },
+
     async render(activePage) {
         // Get current user session
         const { data: { session } } = await supabase.auth.getSession();
@@ -34,12 +58,13 @@ const FluentSidebar = {
 
         // Determine current page for active state
         const currentPath = window.location.pathname;
+        const bp = this.getBasePath();
 
         return `
             <aside class="w-[260px] bg-[#FAF9F8] border-r border-[#EDEBE9] flex flex-col pt-6 pb-4 shrink-0">
                 <div class="px-6 mb-8">
-                    <a href="/index.html" class="flex items-center gap-3 group">
-                        <img src="/assets/images/logo.png" alt="Logo" class="w-8 h-8 object-contain transition-transform group-hover:scale-110">
+                    <a href="${bp}/index.html" class="flex items-center gap-3 group">
+                        <img src="${bp}/assets/images/logo.png" alt="Logo" class="w-8 h-8 object-contain transition-transform group-hover:scale-110">
                         <span class="text-sm font-bold text-[#323130] leading-tight group-hover:text-[#0078D4] transition-colors">
                             Pesantren Teknologi Majapahit
                         </span>
@@ -49,40 +74,40 @@ const FluentSidebar = {
                 <div class="flex-1 overflow-y-auto px-3 space-y-1">
                     <div class="px-3 mb-2 text-caption font-semibold text-[#8A8886] uppercase tracking-wide">Navigate</div>
                     
-                    <a href="/dashboard/${userRole}/index.html" 
+                    <a href="${bp}/dashboard/${userRole}/index.html" 
                         class="sidebar-link ${currentPath.includes('dashboard') && activePage === 'home' ? 'active' : ''}">
                         <ion-icon name="home-outline"></ion-icon> Home
                     </a>
                     
                     ${userRole !== 'instructor' ? `
-                    <a href="/course/catalog.html" 
+                    <a href="${bp}/course/catalog.html" 
                         class="sidebar-link ${currentPath.includes('catalog') || activePage === 'discover' ? 'active' : ''}">
                         <ion-icon name="compass-outline"></ion-icon> Jelajahi
                     </a>
                     
-                    <a href="/course/my_courses.html" 
+                    <a href="${bp}/course/my_courses.html" 
                         class="sidebar-link ${currentPath.includes('my_courses') || activePage === 'my-courses' ? 'active' : ''}">
                         <ion-icon name="library-outline"></ion-icon> Kelas Saya
                     </a>
                     
-                    <a href="/report/index.html" 
+                    <a href="${bp}/report/index.html" 
                         class="sidebar-link ${currentPath.includes('report') || activePage === 'report' ? 'active' : ''}">
                         <ion-icon name="ribbon-outline"></ion-icon> Raport Belajar
                     </a>` : ''}
 
-                    ${this.renderRoleSpecificLinks(userRole, activePage, currentPath)}
+                    ${this.renderRoleSpecificLinks(userRole, activePage, currentPath, bp)}
                 </div>
 
-                ${this.renderUserSection(session, profile)}
+                ${this.renderUserSection(session, profile, bp)}
             </aside>
         `;
     },
 
-    renderRoleSpecificLinks(userRole, activePage, currentPath) {
+    renderRoleSpecificLinks(userRole, activePage, currentPath, bp) {
         if (userRole === 'instructor') {
             return `
                 <div class="h-px bg-[#EDEBE9] my-2"></div>
-                <a href="/course/create.html" class="sidebar-link ${currentPath.includes('create') || activePage === 'create-course' ? ' active' : ''}">
+                <a href="${bp}/course/create.html" class="sidebar-link ${currentPath.includes('create') || activePage === 'create-course' ? ' active' : ''}">
                     <ion-icon name="add-circle-outline"></ion-icon> Buat Kelas
                 </a>
             `;
@@ -90,7 +115,7 @@ const FluentSidebar = {
         return '';
     },
 
-    renderUserSection(session, profile) {
+    renderUserSection(session, profile, bp) {
         if (session) {
             const initial = profile?.full_name?.charAt(0) || session.user.email.charAt(0);
             const displayName = profile?.full_name || session.user.email.split('@')[0];
@@ -111,7 +136,7 @@ const FluentSidebar = {
                         
                         <!-- User Menu (Dropup) -->
                         <div id="user-menu" class="hidden absolute bottom-full left-0 w-full mb-2 p-2 bg-white rounded-lg shadow-xl border border-[#EDEBE9] z-50">
-                            <a href="/settings/index.html" class="block px-3 py-2 text-body rounded-md hover:bg-[#F3F2F1] transition-colors">
+                            <a href="${bp}/settings/index.html" class="block px-3 py-2 text-body rounded-md hover:bg-[#F3F2F1] transition-colors">
                                 <ion-icon name="settings-outline" class="mr-2"></ion-icon> Pengaturan
                             </a>
                             <div class="h-px bg-[#EDEBE9] my-2"></div>
@@ -125,7 +150,7 @@ const FluentSidebar = {
         } else {
             return `
                 <div class="px-3 pt-4 border-t border-[#EDEBE9]">
-                    <a href="/auth/login.html" class="btn-fluent btn-primary-fluent w-full">
+                    <a href="${bp}/auth/login.html" class="btn-fluent btn-primary-fluent w-full">
                         Masuk
                     </a>
                 </div>
@@ -154,9 +179,10 @@ const FluentSidebar = {
         // Logout button
         const logoutBtn = document.getElementById('logout-btn');
         if (logoutBtn) {
+
             logoutBtn.addEventListener('click', async () => {
                 await supabase.auth.signOut();
-                window.location.href = '/index.html';
+                window.location.href = `${this.getBasePath()}/index.html`;
             });
         }
 
