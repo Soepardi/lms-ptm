@@ -233,3 +233,26 @@ create policy "Instructors can update submissions (grade/feedback)." on public.s
       where a.id = assignment_id and c.instructor_id = auth.uid()
     )
   );
+
+
+-- Create discussions table
+create table public.discussions (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references public.profiles(id) not null,
+  lesson_id uuid references public.lessons(id) on delete cascade not null,
+  content text not null,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+-- Enable RLS
+alter table public.discussions enable row level security;
+
+-- Policies for discussions
+create policy "Discussions are viewable by everyone." on public.discussions
+  for select using (true);
+
+create policy "Authenticated users can insert discussions." on public.discussions
+  for insert with check (auth.role() = 'authenticated');
+
+create policy "Users can delete their own discussions." on public.discussions
+  for delete using (auth.uid() = user_id);

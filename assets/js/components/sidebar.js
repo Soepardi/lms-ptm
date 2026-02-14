@@ -41,7 +41,7 @@ const FluentSidebar = {
                     <a href="/index.html" class="flex items-center gap-3 group">
                         <img src="/assets/images/logo.png" alt="Logo" class="w-8 h-8 object-contain transition-transform group-hover:scale-110">
                         <span class="text-sm font-bold text-[#323130] leading-tight group-hover:text-[#0078D4] transition-colors">
-                            Pesantren Teknologi <br> <span class="text-[#605E5C] text-[10px] uppercase tracking-wide font-semibold">Majapahit</span>
+                            Pesantren Teknologi Majapahit
                         </span>
                     </a>
                 </div>
@@ -63,6 +63,11 @@ const FluentSidebar = {
                     <a href="/course/my_courses.html" 
                         class="sidebar-link ${currentPath.includes('my_courses') || activePage === 'my-courses' ? 'active' : ''}">
                         <ion-icon name="library-outline"></ion-icon> Kelas Saya
+                    </a>
+                    
+                    <a href="/report/index.html" 
+                        class="sidebar-link ${currentPath.includes('report') || activePage === 'report' ? 'active' : ''}">
+                        <ion-icon name="ribbon-outline"></ion-icon> Raport Belajar
                     </a>` : ''}
 
                     ${this.renderRoleSpecificLinks(userRole, activePage, currentPath)}

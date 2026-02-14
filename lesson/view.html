@@ -33,9 +33,9 @@
             <div class="bg-white border-b border-[#EDEBE9] sticky top-0 z-20">
                 <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
                     <div class="flex items-center gap-4">
-                        <a :href="`../course/view.html?id=${course?.id}`"
+                        <a :href="getBackLink()"
                             class="w-8 h-8 rounded-full hover:bg-[#F3F2F1] flex items-center justify-center text-[#605E5C] transition-colors"
-                            title="Kembali ke Kelas">
+                            :title="isInstructor ? 'Kembali ke Edit Kelas' : 'Kembali ke Kelas'">
                             <ion-icon name="arrow-back" class="text-xl"></ion-icon>
                         </a>
                         <div class="h-6 w-px bg-[#EDEBE9]"></div>
@@ -64,8 +64,8 @@
 
                     <div class="lg:col-span-2 space-y-6">
 
-                        <div
-                            class="bg-black rounded-xl overflow-hidden shadow-lg aspect-video relative group flex flex-col items-center justify-center">
+                        <div class="bg-black rounded-xl overflow-hidden shadow-lg relative group flex flex-col items-center justify-center"
+                            :class="(lesson?.video_url && isAudio(lesson.video_url) && !lesson.youtube_url) ? 'h-96' : 'aspect-video'">
                             <template x-if="loading">
                                 <div class="absolute inset-0 flex items-center justify-center text-white/50">
                                     <span class="loading loading-spinner loading-lg"></span>
@@ -75,37 +75,48 @@
                             <template x-if="!loading && lesson">
                                 <div class="w-full h-full">
 
-                                    <template x-if="isYouTube(lesson.video_url)">
-                                        <iframe :src="getYouTubeEmbed(lesson.video_url)" class="w-full h-full"
+                                    
+                                    <template x-if="lesson.youtube_url">
+                                        <iframe :src="getYouTubeEmbed(lesson.youtube_url)" class="w-full h-full"
                                             frameborder="0"
                                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                             allowfullscreen>
                                         </iframe>
                                     </template>
 
-                                    <template
-                                        x-if="!isYouTube(lesson.video_url) && lesson.video_url && !isAudio(lesson.video_url)">
-                                        <video :src="lesson.video_url" class="w-full h-full" controls
-                                            controlsList="nodownload"></video>
-                                    </template>
+                                    <template x-if="!lesson.youtube_url && lesson.video_url">
+                                        <div class="w-full h-full">
+                                            <template x-if="isYouTube(lesson.video_url)">
+                                                <iframe :src="getYouTubeEmbed(lesson.video_url)" class="w-full h-full"
+                                                    frameborder="0"
+                                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                    allowfullscreen>
+                                                </iframe>
+                                            </template>
 
-                                    <template
-                                        x-if="!isYouTube(lesson.video_url) && lesson.video_url && isAudio(lesson.video_url)">
-                                        <div
-                                            class="w-full h-full flex flex-col items-center justify-center bg-[#201F1E] text-white">
-                                            <div
-                                                class="w-24 h-24 rounded-full bg-white/10 flex items-center justify-center mb-6 animate-pulse">
-                                                <ion-icon name="musical-notes" class="text-5xl text-white"></ion-icon>
-                                            </div>
-                                            <h3 class="text-xl font-semibold mb-2 px-8 text-center"
-                                                x-text="lesson.title"></h3>
-                                            <p class="text-sm text-white/60 mb-8">Audio Lesson</p>
-                                            <audio :src="lesson.video_url" controls class="w-3/4 max-w-md h-12"
-                                                controlsList="nodownload"></audio>
+                                            <template x-if="!isYouTube(lesson.video_url) && !isAudio(lesson.video_url)">
+                                                <video :src="lesson.video_url" class="w-full h-full" controls
+                                                    controlsList="nodownload"></video>
+                                            </template>
+                                            <template x-if="!isYouTube(lesson.video_url) && isAudio(lesson.video_url)">
+                                                <div
+                                                    class="w-full h-full flex flex-col items-center justify-center bg-[#201F1E] text-white">
+                                                    <div
+                                                        class="w-24 h-24 rounded-full bg-white/10 flex items-center justify-center mb-6 animate-pulse">
+                                                        <ion-icon name="musical-notes"
+                                                            class="text-5xl text-white"></ion-icon>
+                                                    </div>
+                                                    <h3 class="text-xl font-semibold mb-2 px-8 text-center"
+                                                        x-text="lesson.title"></h3>
+                                                    <p class="text-sm text-white/60 mb-8">Audio Lesson</p>
+                                                    <audio :src="lesson.video_url" controls class="w-3/4 max-w-md h-12"
+                                                        controlsList="nodownload"></audio>
+                                                </div>
+                                            </template>
                                         </div>
                                     </template>
 
-                                    <div x-show="!lesson.video_url"
+                                    <div x-show="!lesson.video_url && !lesson.youtube_url"
                                         class="w-full h-full flex flex-col items-center justify-center text-white/60 bg-[#201F1E]">
                                         <ion-icon name="document-text-outline" class="text-6xl mb-4"></ion-icon>
                                         <p class="text-lg font-medium">Materi Bacaan</p>
@@ -113,6 +124,39 @@
                                 </div>
                             </template>
                         </div>
+
+                        <template
+                            x-if="!loading && lesson && lesson.youtube_url && lesson.video_url && !isYouTube(lesson.video_url)">
+                            <div
+                                class="collapse collapse-arrow bg-white border border-[#EDEBE9] rounded-xl shadow-sm mt-4">
+                                <input type="checkbox" />
+                                <div
+                                    class="collapse-title text-sm font-semibold text-[#323130] flex items-center gap-2">
+                                    <ion-icon name="videocam-outline" class="text-lg text-[#0078D4]"></ion-icon>
+                                    Media Tambahan
+                                </div>
+                                <div class="collapse-content">
+                                    <div class="pt-2">
+                                        <template x-if="!isAudio(lesson.video_url)">
+                                            <video :src="lesson.video_url"
+                                                class="w-full rounded-lg aspect-video bg-black" controls
+                                                controlsList="nodownload"></video>
+                                        </template>
+
+                                        <template x-if="isAudio(lesson.video_url)">
+                                            <div class="bg-[#F3F2F1] p-4 rounded-lg flex items-center gap-4">
+                                                <div
+                                                    class="w-10 h-10 rounded-full bg-[#0078D4] flex items-center justify-center text-white">
+                                                    <ion-icon name="musical-notes"></ion-icon>
+                                                </div>
+                                                <audio :src="lesson.video_url" controls class="w-full h-10"
+                                                    controlsList="nodownload"></audio>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
 
                         <div class="card-fluent p-8 space-y-6">
                             <div class="flex justify-between items-start">
@@ -158,49 +202,124 @@
 
                     </div>
 
-                    <div class="lg:col-span-1 space-y-6">
-                        <div
-                            class="card-fluent p-0 overflow-hidden flex flex-col max-h-[calc(100vh-140px)] sticky top-24">
-                            <div class="p-4 border-b border-[#EDEBE9] bg-[#FAF9F8]">
-                                <h3 class="font-semibold text-body-large">Daftar Materi</h3>
-                                <p class="text-caption text-[#605E5C]"
-                                    x-text="(moduleLessons?.length || 0) + ' Pelajaran'"></p>
+                    <div class="card-fluent p-8 space-y-6">
+                        <h3 class="text-xl font-bold text-[#323130] flex items-center gap-2">
+                            <ion-icon name="chatbubbles-outline" class="text-[#0078D4]"></ion-icon>
+                            Diskusi Kelas
+                        </h3>
+
+                        <div class="flex gap-4 items-start">
+                            <div
+                                class="w-10 h-10 rounded-full bg-[#0078D4] flex items-center justify-center text-white font-bold shrink-0">
+                                <span x-text="session?.user?.email?.charAt(0).toUpperCase() || 'U'"></span>
                             </div>
+                            <div class="flex-1 space-y-3">
+                                <textarea x-model="newComment"
+                                    class="w-full p-3 bg-[#F3F2F1] border border-[#EDEBE9] rounded-lg focus:outline-none focus:border-[#0078D4] transition-colors resize-y min-h-[100px]"
+                                    placeholder="Tulis pertanyaan atau tanggapan Anda..."
+                                    :disabled="isPosting"></textarea>
+                                <div class="flex justify-end">
+                                    <button @click="postComment" :disabled="!newComment.trim() || isPosting"
+                                        class="btn-fluent btn-primary-fluent px-6 py-2 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                                        <span x-show="!isPosting">Kirim</span>
+                                        <span x-show="isPosting" class="loading loading-spinner loading-xs"></span>
+                                        <ion-icon name="send" x-show="!isPosting"></ion-icon>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
 
-                            <div class="overflow-y-auto flex-1">
-                                <template x-for="(l, index) in moduleLessons" :key="l.id">
-                                    <a :href="`view.html?id=${l.id}`"
-                                        class="flex items-start gap-3 p-4 hover:bg-[#F3F2F1] transition-colors border-l-[3px]"
-                                        :class="l.id === lesson?.id ? 'bg-[#EFF6FC] border-[#0078D4]' : 'border-transparent'">
+                        <div class="h-px bg-[#EDEBE9]"></div>
 
-                                        <div class="mt-0.5">
-                                            <ion-icon
-                                                :name="l.id === lesson?.id ? 'play-circle' : 'play-circle-outline'"
-                                                class="text-lg"
-                                                :class="l.id === lesson?.id ? 'text-[#0078D4]' : 'text-[#8A8886]'"></ion-icon>
+                        <div class="space-y-6">
+                            <template x-if="loadingComments">
+                                <div class="flex justify-center py-8">
+                                    <span class="loading loading-spinner loading-md text-[#0078D4]"></span>
+                                </div>
+                            </template>
+
+                            <template x-for="comment in comments" :key="comment.id">
+                                <div class="flex gap-4 group">
+                                    <div
+                                        class="w-10 h-10 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-[#605E5C] font-bold shrink-0 border border-[#EDEBE9]">
+                                        <span x-text="comment.profiles?.full_name?.charAt(0) || 'U'"></span>
+                                    </div>
+                                    <div class="flex-1 space-y-1">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center gap-2">
+                                                <span class="font-semibold text-[#323130]"
+                                                    x-text="comment.profiles?.full_name || 'User'"></span>
+                                                <span x-show="comment.profiles?.role === 'instructor'"
+                                                    class="px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 text-[10px] font-bold uppercase tracking-wide">Pengajar</span>
+                                                <span class="text-xs text-[#8A8886]">•</span>
+                                                <span class="text-xs text-[#605E5C]"
+                                                    x-text="formatDate(comment.created_at)"></span>
+                                            </div>
+
+                                            <button x-show="session?.user?.id === comment.user_id"
+                                                @click="deleteComment(comment.id)"
+                                                class="text-[#A80000] opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-50 p-1.5 rounded-md"
+                                                title="Hapus komentar">
+                                                <ion-icon name="trash-outline"></ion-icon>
+                                            </button>
                                         </div>
+                                        <p class="text-[#323130] leading-relaxed whitespace-pre-wrap"
+                                            x-text="comment.content"></p>
+                                    </div>
+                                </div>
+                            </template>
 
-                                        <div>
-                                            <div class="text-sm font-semibold"
-                                                :class="l.id === lesson?.id ? 'text-[#0078D4]' : 'text-[#323130]'"
-                                                x-text="l.title"></div>
-                                            <div class="text-xs text-[#605E5C] mt-1 line-clamp-1">Video • 10 min</div>
-                                        </div>
-                                    </a>
-                                </template>
+                            <div x-show="!loadingComments && comments.length === 0"
+                                class="text-center py-8 text-[#605E5C]">
+                                <ion-icon name="chatbubble-ellipses-outline"
+                                    class="text-4xl text-[#C8C6C4] mb-2"></ion-icon>
+                                <p>Belum ada diskusi. Mulai percakapan sekarang!</p>
                             </div>
                         </div>
                     </div>
 
                 </div>
+
+                <div class="lg:col-span-1 space-y-6">
+                    <div class="card-fluent p-0 overflow-hidden flex flex-col max-h-[calc(100vh-140px)] sticky top-24">
+                        <div class="p-4 border-b border-[#EDEBE9] bg-[#FAF9F8]">
+                            <h3 class="font-semibold text-body-large">Daftar Materi</h3>
+                            <p class="text-caption text-[#605E5C]" x-text="(moduleLessons?.length || 0) + ' Pelajaran'">
+                            </p>
+                        </div>
+
+                        <div class="overflow-y-auto flex-1">
+                            <template x-for="(l, index) in moduleLessons" :key="l.id">
+                                <a :href="`view.html?id=${l.id}`"
+                                    class="flex items-start gap-3 p-4 hover:bg-[#F3F2F1] transition-colors border-l-[3px]"
+                                    :class="l.id === lesson?.id ? 'bg-[#EFF6FC] border-[#0078D4]' : 'border-transparent'">
+
+                                    <div class="mt-0.5">
+                                        <ion-icon :name="l.id === lesson?.id ? 'play-circle' : 'play-circle-outline'"
+                                            class="text-lg"
+                                            :class="l.id === lesson?.id ? 'text-[#0078D4]' : 'text-[#8A8886]'"></ion-icon>
+                                    </div>
+
+                                    <div>
+                                        <div class="text-sm font-semibold"
+                                            :class="l.id === lesson?.id ? 'text-[#0078D4]' : 'text-[#323130]'"
+                                            x-text="l.title"></div>
+                                        <div class="text-xs text-[#605E5C] mt-1 line-clamp-1">Video • 10 min</div>
+                                    </div>
+                                </a>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+
             </div>
-        </main>
+    </div>
+    </main>
     </div>
 
     <script src="../assets/js/components/sidebar.js"></script>
     <script>
         document.addEventListener('alpine:init', () => {
-            // Corrected component name to 'lessonViewer' to match x-data
             Alpine.data('lessonViewer', () => ({
                 course: null,
                 lesson: null,
@@ -210,6 +329,12 @@
                 isCompleted: false,
                 loading: true,
                 session: null,
+
+                comments: [],
+                newComment: '',
+                isPosting: false,
+                loadingComments: true,
+                isInstructor: false,
 
                 async init() {
                     const urlParams = new URLSearchParams(window.location.search);
@@ -225,11 +350,12 @@
 
                     await this.loadLessonData(lessonId);
                     this.loading = false;
+
+                    this.loadComments();
                 },
 
                 async loadLessonData(lessonId) {
                     try {
-                        // 1. Fetch current lesson
                         const { data: lesson, error } = await supabase
                             .from('lessons')
                             .select('*')
@@ -239,7 +365,6 @@
                         if (error) throw error;
                         this.lesson = lesson;
 
-                        // 2. Fetch Module and Kelas info (Separate queries to avoid 400 bad request with deep nesting)
                         const { data: module } = await supabase
                             .from('modules')
                             .select('*, course:courses(*)')
@@ -247,9 +372,11 @@
                             .single();
 
                         if (module) {
-                            this.course = module.course; // Assuming mapped correctly
+                            this.course = module.course;
+                            if (this.session && this.course) {
+                                this.isInstructor = (this.session.user.id === this.course.instructor_id);
+                            }
 
-                            // 3. Fetch all lessons in this module for navigation/sidebar
                             const { data: lessons } = await supabase
                                 .from('lessons')
                                 .select('id, title, order_index')
@@ -259,7 +386,6 @@
 
                             this.moduleLessons = lessons || [];
 
-                            // Determine Prev/Next
                             const currentIndex = this.moduleLessons.findIndex(l => l.id === lesson.id);
                             if (currentIndex > 0) {
                                 this.prevLessonId = this.moduleLessons[currentIndex - 1].id;
@@ -269,7 +395,6 @@
                             }
                         }
 
-                        // 4. Check completion status
                         if (this.session) {
                             const { data } = await supabase
                                 .from('lesson_completions')
@@ -283,7 +408,7 @@
 
                     } catch (err) {
                         console.error('Error loading lesson:', err);
-                        // alert('Gagal memuat pelajaran');
+                        
                     }
                 },
 
@@ -300,7 +425,7 @@
 
                         if (!error) {
                             this.isCompleted = true;
-                            // Optional: update enrollment progress
+                            
                         }
                     } catch (err) {
                         console.error('Error marking complete:', err);
@@ -342,10 +467,91 @@
                     return videoId ? `https://www.youtube.com/embed/${videoId}?rel=0` : url;
                 },
 
+                getBackLink() {
+                    if (this.isInstructor) {
+                        return `../course/edit.html?id=${this.course?.id}`;
+                    }
+                    return `../course/view.html?id=${this.course?.id}`;
+                },
+
                 formatContent(content) {
                     if (!content) return '';
-                    // Simple newline to break conversion
                     return content.replace(/\n/g, '<br>');
+                },
+
+                async loadComments() {
+                    if (!this.lesson?.id) return;
+
+                    try {
+                        const { data, error } = await supabase
+                            .from('discussions')
+                            .select('*, profiles(full_name, role)')
+                            .eq('lesson_id', this.lesson.id)
+                            .order('created_at', { ascending: false });
+
+                        if (error) throw error;
+                        this.comments = data || [];
+                    } catch (err) {
+                        console.error('Error loading comments:', err);
+                    } finally {
+                        this.loadingComments = false;
+                    }
+                },
+
+                async postComment() {
+                    if (!this.newComment.trim() || !this.session || !this.lesson?.id) return;
+
+                    this.isPosting = true;
+                    try {
+                        const { error } = await supabase
+                            .from('discussions')
+                            .insert({
+                                user_id: this.session.user.id,
+                                lesson_id: this.lesson.id,
+                                content: this.newComment.trim()
+                            });
+
+                        if (error) throw error;
+
+                        this.newComment = '';
+                        await this.loadComments(); 
+                    } catch (err) {
+                        console.error('Error posting comment:', err);
+                        alert('Gagal mengirim komentar');
+                    } finally {
+                        this.isPosting = false;
+                    }
+                },
+
+                async deleteComment(id) {
+                    if (!confirm('Hapus komentar ini?')) return;
+
+                    try {
+                        const { error } = await supabase
+                            .from('discussions')
+                            .delete()
+                            .eq('id', id);
+
+                        if (error) throw error;
+
+                        this.comments = this.comments.filter(c => c.id !== id);
+                    } catch (err) {
+                        console.error('Error deleting comment:', err);
+                        alert('Gagal menghapus komentar');
+                    }
+                },
+
+                formatDate(dateString) {
+                    if (!dateString) return '';
+                    const date = new Date(dateString);
+                    const now = new Date();
+                    const diffTime = Math.abs(now - date);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                    if (diffDays <= 1) {
+                        return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+                    }
+                    return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
                 }
             }))
         })

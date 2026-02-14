@@ -24,7 +24,7 @@
             display: none !important;
         }
 
-        
+
         .modal-enter {
             animation: modal-enter 0.2s ease-out forwards;
         }
@@ -41,7 +41,7 @@
             }
         }
 
-        
+
         .flatpickr-calendar {
             border-radius: 8px;
             box-shadow: 0 6.4px 14.4px rgba(0, 0, 0, 0.132), 0 1.2px 3.6px rgba(0, 0, 0, 0.108);
@@ -165,8 +165,14 @@
                                                     </div>
                                                     <div
                                                         class="opacity-0 group-hover/lesson:opacity-100 transition-opacity flex gap-2">
+                                                        <a :href="`../lesson/view.html?id=${lesson.id}`" target="_blank"
+                                                            class="text-[#605E5C] hover:text-[#0078D4] p-1.5 hover:bg-blue-50 rounded-full transition-colors"
+                                                            title="Lihat Pelajaran">
+                                                            <ion-icon name="eye-outline"></ion-icon>
+                                                        </a>
                                                         <button @click="deleteLesson(lesson.id)"
-                                                            class="text-[#605E5C] hover:text-red-600 p-1.5 hover:bg-red-50 rounded-full transition-colors">
+                                                            class="text-[#605E5C] hover:text-red-600 p-1.5 hover:bg-red-50 rounded-full transition-colors"
+                                                            title="Hapus Pelajaran">
                                                             <ion-icon name="trash-outline"></ion-icon>
                                                         </button>
                                                     </div>
@@ -550,7 +556,7 @@
                     }
                     await this.fetchCourseData();
 
-                    // Initialize Flatpickr when modals are shown
+                    
                     this.$watch('showAssignmentModal', (value) => {
                         if (value) {
                             setTimeout(() => {
@@ -630,11 +636,9 @@
                     this.uploading = true;
                     try {
                         let videoUrl = null, attachmentUrl = null;
+                        let youtubeLink = this.youtubeUrl || null;
 
-                        if (this.youtubeUrl) {
-                            videoUrl = this.youtubeUrl;
-                            this.uploadProgress = 50;
-                        } else if (this.videoFile) {
+                        if (this.videoFile) {
                             videoUrl = await this.uploadFile(this.videoFile, `${this.courseId}/${Date.now()}_${this.videoFile.name}`);
                             this.uploadProgress = 50;
                         }
@@ -649,6 +653,7 @@
                             title: this.newLessonTitle,
                             content: this.newLessonContent,
                             video_url: videoUrl,
+                            youtube_url: youtubeLink,
                             attachment_url: attachmentUrl
                         });
 

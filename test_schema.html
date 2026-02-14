@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./assets/js/utils/supabase-client.js"></script>
+</head>
+
+<body>
+    <div id="result">Testing...</div>
+    <script>
+        async function test() {
+            try {
+                const { data, error } = await supabase.from('lessons').select('youtube_url').limit(1);
+                if (error) {
+                    document.getElementById('result').innerText = 'Error: ' + JSON.stringify(error);
+                } else {
+                    document.getElementById('result').innerText = 'Success: Column exists';
+                }
+            } catch (e) {
+                document.getElementById('result').innerText = 'Exception: ' + e.message;
+            }
+        }
+        test();
+    </script>
+</body>
+
+</html>

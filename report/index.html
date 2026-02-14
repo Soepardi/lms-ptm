@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raport Belajar - Pesantren Teknologi Majapahit</title>
+    <link rel="icon" type="image/x-icon" href="../assets/images/favicon.ico">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.1.0/dist/full.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/utils/supabase-client.js"></script>
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="stylesheet" href="../assets/css/sidebar.css">
+    <style>
+        [x-cloak] {
+            display: none !important;
+        }
+
+        @media print {
+
+            #app-sidebar,
+            .no-print {
+                display: none !important;
+            }
+
+            main {
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+                overflow: visible !important;
+            }
+
+            .card-fluent {
+                box-shadow: none !important;
+                border: 1px solid #ddd !important;
+            }
+
+            body {
+                background: white !important;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-[#F3F2F1] text-[#323130]" x-data="reportCard" data-active-page="report">
+    <div class="flex h-screen overflow-hidden">
+
+        <div id="app-sidebar"></div>
+
+        <main class="flex-1 overflow-y-auto">
+            <div class="max-w-7xl mx-auto px-6 py-8">
+
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                    <div>
+                        <h1 class="text-3xl font-bold text-[#323130]">Raport Belajar</h1>
+                        <p class="text-[#605E5C] mt-1">Laporan akademik dan progres pembelajaran Anda</p>
+                    </div>
+                    <button @click="printReport"
+                        class="btn-fluent bg-white border border-[#8A8886] text-[#323130] hover:bg-[#F3F2F1] shadow-sm flex items-center gap-2 no-print">
+                        <ion-icon name="print-outline"></ion-icon>
+                        Cetak Raport
+                    </button>
+                </div>
+
+                <div class="card-fluent p-6 mb-8 flex flex-col md:flex-row items-center gap-6 bg-white">
+                    <div
+                        class="w-20 h-20 rounded-full bg-[#0078D4] flex items-center justify-center text-white text-3xl font-bold">
+                        <span x-text="profile?.full_name?.charAt(0) || userEmail?.charAt(0) || 'S'"></span>
+                    </div>
+                    <div class="flex-1 text-center md:text-left">
+                        <h2 class="text-2xl font-bold text-[#323130]" x-text="profile?.full_name || 'Loading...'"></h2>
+                        <p class="text-[#605E5C]" x-text="userEmail"></p>
+                        <div class="mt-2 flex flex-wrap justify-center md:justify-start gap-4 text-sm">
+                            <span
+                                class="px-3 py-1 bg-blue-50 text-blue-700 rounded-full font-semibold border border-blue-100">
+                                <span x-text="totalCourses">0</span> Kelas Diikuti
+                            </span>
+                            <span
+                                class="px-3 py-1 bg-green-50 text-green-700 rounded-full font-semibold border border-green-100">
+                                <span x-text="completedCourses">0</span> Kelas Selesai
+                            </span>
+                            <span
+                                class="px-3 py-1 bg-orange-50 text-orange-700 rounded-full font-semibold border border-orange-100">
+                                Nilai Rata-rata: <span x-text="averageScore">0.0</span>
+                            </span>
+                            <span
+                                class="px-3 py-1 bg-gray-50 text-gray-700 rounded-full font-semibold border border-gray-100"
+                                title="Kriteria Ketuntasan Minimal">
+                                KKM: <span x-text="kkm">75</span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="text-right hidden md:block">
+                        <p class="text-xs text-[#8A8886] uppercase tracking-wide font-semibold mb-1">Tanggal Cetak</p>
+                        <p class="text-lg font-medium text-[#323130]"
+                            x-text="new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'})">
+                        </p>
+                    </div>
+                </div>
+
+                <div class="card-fluent p-0 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-[#FAF9F8] border-b border-[#EDEBE9]">
+                                    <th class="px-6 py-4 font-semibold text-sm text-[#605E5C] uppercase tracking-wider">
+                                        Mata Pelajaran / Kelas</th>
+                                    <th class="px-6 py-4 font-semibold text-sm text-[#605E5C] uppercase tracking-wider">
+                                        Instruktur</th>
+                                    <th
+                                        class="px-6 py-4 font-semibold text-sm text-[#605E5C] uppercase tracking-wider text-center">
+                                        Progres</th>
+                                    <th
+                                        class="px-6 py-4 font-semibold text-sm text-[#605E5C] uppercase tracking-wider text-center">
+                                        Nilai Rata-rata</th>
+                                    <th
+                                        class="px-6 py-4 font-semibold text-sm text-[#605E5C] uppercase tracking-wider text-center">
+                                        Grade</th>
+                                    <th
+                                        class="px-6 py-4 font-semibold text-sm text-[#605E5C] uppercase tracking-wider text-center">
+                                        Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-[#EDEBE9]">
+                                <template x-if="loading">
+                                    <tr>
+                                        <td colspan="6" class="px-6 py-12 text-center text-[#605E5C]">
+                                            <span class="loading loading-spinner loading-md text-[#0078D4]"></span>
+                                            <div class="mt-2">Memuat data raport...</div>
+                                        </td>
+                                    </tr>
+                                </template>
+
+                                <template x-for="item in reportData" :key="item.course_id">
+                                    <tr class="hover:bg-[#F3F2F1] transition-colors">
+                                        <td class="px-6 py-4">
+                                            <div class="font-semibold text-[#323130]" x-text="item.course_title"></div>
+                                            <div class="text-xs text-[#8A8886] mt-1" x-text="item.code || '-'"></div>
+                                        </td>
+                                        <td class="px-6 py-4 text-sm text-[#323130]" x-text="item.instructor_name"></td>
+                                        <td class="px-6 py-4">
+                                            <div class="flex items-center gap-2 justify-center">
+                                                <div class="w-24 bg-gray-200 rounded-full h-2">
+                                                    <div class="bg-[#0078D4] h-2 rounded-full"
+                                                        :style="`width: ${item.progress}%`"></div>
+                                                </div>
+                                                <span class="text-xs font-semibold text-[#605E5C]"
+                                                    x-text="item.progress + '%'"></span>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 text-center font-bold text-[#323130]"
+                                            x-text="item.average_score"></td>
+                                        <td class="px-6 py-4 text-center font-bold"
+                                            :class="getGradeColor(item.letter_grade)" x-text="item.letter_grade"></td>
+                                        <td class="px-6 py-4 text-center">
+                                            <span class="px-2.5 py-1 rounded-full text-xs font-bold border"
+                                                :class="item.passed ? 'bg-green-100 text-green-700 border-green-200' : 'bg-gray-100 text-gray-600 border-gray-200'"
+                                                x-text="item.passed ? 'LULUS' : 'BELUM LULUS'">
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </template>
+
+                                <tr x-show="!loading && reportData.length === 0">
+                                    <td colspan="6" class="px-6 py-12 text-center text-[#605E5C]">
+                                        <ion-icon name="school-outline" class="text-4xl text-[#C8C6C4] mb-2"></ion-icon>
+                                        <p>Belum ada data akademik yang tersedia.</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="px-6 py-4 bg-[#FAF9F8] border-t border-[#EDEBE9] text-xs text-[#605E5C]">
+                        <p>* Nilai rata-rata dihitung dari seluruh tugas yang telah dinilai.</p>
+                        <p>* Syarat kelulusan: Nilai minimal 75 (B) dan Progres 100%.</p>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script src="../assets/js/components/sidebar.js"></script>
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('reportCard', () => ({
+                profile: null,
+                userEmail: '',
+                reportData: [],
+                loading: true,
+                totalCourses: 0,
+                completedCourses: 0,
+                averageScore: 0,
+                kkm: 75,
+
+                async init() {
+                    const { data: { session } } = await supabase.auth.getSession();
+                    if (!session) {
+                        window.location.href = '../auth/login.html';
+                        return;
+                    }
+                    this.userEmail = session.user.email;
+
+                    const { data: profile } = await supabase.from('profiles').select('*').eq('id', session.user.id).single();
+                    this.profile = profile;
+
+                    await this.fetchReportData(session.user.id);
+                    this.loading = false;
+                },
+
+                async fetchReportData(userId) {
+                    try {
+                        const { data: enrollments, error: enrollError } = await supabase
+                            .from('enrollments')
+                            .select('*, course:courses(id, title, instructor_id)')
+                            .eq('user_id', userId);
+
+                        if (enrollError) throw enrollError;
+
+                        if (!enrollments || enrollments.length === 0) {
+                            this.reportData = [];
+                            return;
+                        }
+
+                        this.totalCourses = enrollments.length;
+
+                        const reportPromises = enrollments.map(async (enrollment) => {
+                            const courseId = enrollment.course.id;
+
+                            const { data: instructor } = await supabase
+                                .from('profiles')
+                                .select('full_name')
+                                .eq('id', enrollment.course.instructor_id)
+                                .single();
+
+                            const { data: assignments } = await supabase
+                                .from('assignments')
+                                .select('id')
+                                .eq('course_id', courseId);
+
+                            let totalScore = 0;
+                            let assignmentCount = 0;
+
+                            if (assignments && assignments.length > 0) {
+                                assignmentCount = assignments.length;
+                                const assignmentIds = assignments.map(a => a.id);
+
+                                const { data: submissions } = await supabase
+                                    .from('submissions')
+                                    .select('grade')
+                                    .in('assignment_id', assignmentIds)
+                                    .eq('user_id', userId);
+
+                                if (submissions) {
+                                    submissions.forEach(sub => {
+                                        if (sub.grade !== null) {
+                                            totalScore += sub.grade;
+                                        }
+                                    });
+                                }
+                            }
+
+                            const averageScore = assignmentCount > 0 ? Math.round(totalScore / assignmentCount) : 0;
+                            const progress = enrollment.progress_pct || 0;
+                            let letterGrade = 'E';
+                            if (averageScore >= 85) letterGrade = 'A';
+                            else if (averageScore >= 75) letterGrade = 'B';
+                            else if (averageScore >= 60) letterGrade = 'C';
+                            else if (averageScore >= 50) letterGrade = 'D';
+
+                            const passed = (progress === 100 && averageScore >= 75);
+
+                            return {
+                                course_id: courseId,
+                                course_title: enrollment.course.title,
+                                instructor_name: instructor?.full_name || 'Unknown',
+                                progress: progress,
+                                average_score: assignmentCount > 0 ? averageScore : '-',
+                                letter_grade: assignmentCount > 0 ? letterGrade : '-',
+                                passed: passed
+                            };
+                        });
+
+                        this.reportData = await Promise.all(reportPromises);
+                        this.completedCourses = this.reportData.filter(d => d.passed).length;
+
+                        const scoredCourses = this.reportData.filter(d => d.average_score !== '-');
+                        if (scoredCourses.length > 0) {
+                            const totalScore = scoredCourses.reduce((sum, item) => sum + item.average_score, 0);
+                            this.averageScore = Math.round(totalScore / scoredCourses.length);
+                        } else {
+                            this.averageScore = 0;
+                        }
+
+                    } catch (err) {
+                        console.error('Error fetching report:', err);
+                    }
+                },
+
+                getGradeColor(grade) {
+                    if (grade === 'A') return 'text-green-600';
+                    if (grade === 'B') return 'text-blue-600';
+                    if (grade === 'C') return 'text-orange-600';
+                    if (grade === 'D') return 'text-red-500';
+                    return 'text-gray-400';
+                },
+
+                printReport() {
+                    window.print();
+                }
+            }))
+        })
+    </script>
+</body>
+
+</html>
