@@ -1,0 +1,80 @@
+/* Sidebar Component Styles */
+#app-sidebar {
+    display: flex;
+    height: 100%;
+}
+
+#app-sidebar>aside {
+    height: 100%;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.375rem;
+    font-size: 14px;
+    font-weight: 500;
+    color: #323130;
+    text-decoration: none;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar-link:hover {
+    background-color: #F3F2F1;
+    transform: translateX(2px);
+}
+
+.sidebar-link.active {
+    background-color: rgba(0, 120, 212, 0.1);
+    color: #0078D4;
+    font-weight: 600;
+}
+
+.sidebar-link ion-icon {
+    font-size: 1.25rem;
+    transition: transform 0.15s ease;
+}
+
+.sidebar-link:hover ion-icon {
+    transform: scale(1.1);
+}
+
+.sidebar-link.active ion-icon {
+    color: #0078D4;
+}
+
+/* Smooth page transition effect */
+@keyframes slideInFromLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+#app-sidebar {
+    animation: slideInFromLeft 0.3s ease-out;
+}
+
+/* User menu animation */
+#user-menu {
+    animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

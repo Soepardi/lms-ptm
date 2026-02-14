@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Masuk - Pesantren Teknologi Majapahit</title>
+    <link rel="icon" type="image/x-icon" href="../assets/images/favicon.ico">
+
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- Tailwind CSS & DaisyUI -->
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.1.0/dist/full.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/utils/supabase-client.js"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+
+<body class="min-h-screen bg-white flex">
+
+    <!-- Left Column: Visual (Hidden on Mobile) -->
+    <div class="hidden lg:flex w-1/2 bg-[#F3F2F1] relative items-center justify-center overflow-hidden">
+        <!-- Modern Abstract Background -->
+        <div
+            class="absolute w-[800px] h-[800px] bg-gradient-to-br from-[#0078D4]/20 to-[#50E6FF]/20 rounded-full blur-3xl -top-[20%] -left-[20%] animate-pulse">
+        </div>
+        <div
+            class="absolute w-[600px] h-[600px] bg-gradient-to-tr from-[#005A9E]/10 to-transparent rounded-full blur-3xl bottom-[10%] right-[10%]">
+        </div>
+
+        <div class="relative z-10 p-12 max-w-xl text-center">
+            <img src="../assets/images/logo.png" alt="Logo"
+                class="w-32 h-32 object-contain mx-auto mb-8 animate-fade-in drop-shadow-xl">
+
+            <h2 class="text-3xl font-bold text-[#323130] mb-6 leading-tight animate-fade-in"
+                style="animation-delay: 0.1s">
+                Membangun Generasi <br>
+                <span class="text-[#0078D4]">Teknologi Berkarakter</span>
+            </h2>
+
+            <p class="text-lg text-[#605E5C] leading-relaxed mb-8 animate-fade-in" style="animation-delay: 0.2s">
+                Platform pembelajaran digital resmi Pesantren Teknologi Majapahit. Akses materi, kumpulkan tugas, dan
+                pantau progres belajar Anda di satu tempat.
+            </p>
+
+            <div class="flex justify-center gap-4 animate-fade-in" style="animation-delay: 0.3s">
+                <div
+                    class="px-4 py-2 bg-white/50 backdrop-blur rounded-lg border border-white/60 text-sm font-semibold text-[#605E5C]">
+                    Kurikulum Modern
+                </div>
+                <div
+                    class="px-4 py-2 bg-white/50 backdrop-blur rounded-lg border border-white/60 text-sm font-semibold text-[#605E5C]">
+                    Nilai Pesantren
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Form -->
+    <div class="w-full lg:w-1/2 flex flex-col justify-center items-center p-8 md:p-16 relative animate-fade-in">
+        <a href="../index.html"
+            class="absolute top-8 left-8 flex items-center gap-2 text-[#605E5C] hover:text-[#0078D4] transition-colors font-semibold text-sm group">
+            <div
+                class="w-8 h-8 rounded-full bg-[#F3F2F1] flex items-center justify-center transition-colors group-hover:bg-[#EFF6FC]">
+                <ion-icon name="arrow-back"></ion-icon>
+            </div>
+            <span>Kembali ke Beranda</span>
+        </a>
+
+        <div class="w-full max-w-sm">
+            <div class="mb-10">
+                <h1 class="text-3xl font-bold text-[#323130] mb-3">Selamat Datang</h1>
+                <p class="text-[#605E5C]">Masuk untuk melanjutkan pembelajaran</p>
+            </div>
+
+            <form x-data="loginForm" @submit.prevent="handleLogin" class="space-y-6">
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-[#605E5C] mb-2">Email
+                            Address</label>
+                        <div class="relative">
+                            <input type="email" x-model="email" placeholder="nama@email.com"
+                                class="input-fluent w-full pl-10 h-12 bg-[#F3F2F1] focus:bg-white transition-colors border-transparent focus:border-[#0078D4]"
+                                required />
+                            <ion-icon name="mail-outline"
+                                class="absolute left-3.5 top-3.5 text-lg text-[#605E5C]"></ion-icon>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label
+                            class="block text-xs font-semibold uppercase tracking-wider text-[#605E5C] mb-2">Password</label>
+                        <div class="relative">
+                            <input :type="showPassword ? 'text' : 'password'" x-model="password" placeholder="••••••••"
+                                class="input-fluent w-full pl-10 pr-10 h-12 bg-[#F3F2F1] focus:bg-white transition-colors border-transparent focus:border-[#0078D4]"
+                                required />
+                            <ion-icon name="lock-closed-outline"
+                                class="absolute left-3.5 top-3.5 text-lg text-[#605E5C]"></ion-icon>
+                            <button type="button" @click="showPassword = !showPassword"
+                                class="absolute right-3.5 top-3.5 text-lg text-[#605E5C] hover:text-[#323130] focus:outline-none">
+                                <ion-icon :name="showPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+                            </button>
+                        </div>
+                        <div class="flex justify-end mt-2">
+                            <a href="#" class="text-sm font-medium text-[#0078D4] hover:underline">Lupa password?</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div x-show="errorMessage" x-transition
+                    class="p-3 rounded-lg bg-red-50 border border-red-100 flex items-center gap-2 text-red-600 text-sm font-medium">
+                    <ion-icon name="alert-circle"></ion-icon>
+                    <span x-text="errorMessage"></span>
+                </div>
+
+                <button type="submit"
+                    class="w-full btn-fluent btn-primary-fluent h-12 text-base shadow-lg shadow-[#0078D4]/20 hover:shadow-[#0078D4]/40 hover:-translate-y-0.5"
+                    :disabled="loading">
+                    <span x-show="!loading" class="flex items-center justify-center gap-2">
+                        Masuk Sekarang <ion-icon name="arrow-forward"></ion-icon>
+                    </span>
+                    <span x-show="loading" class="loading loading-spinner loading-sm"></span>
+                </button>
+
+                <p class="text-center text-sm text-[#605E5C] mt-8">
+                    Belum punya akun?
+                    <a href="signup.html" class="text-[#0078D4] font-bold hover:underline transition-colors">Daftar
+                        disini</a>
+                </p>
+            </form>
+        </div>
+
+        <!-- Simple Footer -->
+        <div class="absolute bottom-6 text-center text-xs text-[#8A8886]">
+            &copy; 2024 Pesantren Teknologi Majapahit
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('loginForm', () => ({
+                email: '',
+                password: '',
+                showPassword: false,
+                loading: false,
+                errorMessage: '',
+
+                async handleLogin() {
+                    this.loading = true;
+                    this.errorMessage = '';
+                    try {
+                        const { data, error } = await supabase.auth.signInWithPassword({
+                            email: this.email,
+                            password: this.password
+                        })
+                        if (error) throw error;
+
+                        const { data: profile } = await supabase
+                            .from('profiles')
+                            .select('role')
+                            .eq('id', data.session.user.id)
+                            .single();
+
+                        const role = profile ? profile.role : 'student';
+                        window.location.href = `../dashboard/${role}/index.html`;
+                    } catch (error) {
+                        this.errorMessage = error.message;
+                    } finally {
+                        this.loading = false;
+                    }
+                }
+            }))
+        })
+    </script>
+</body>
+
+</html>

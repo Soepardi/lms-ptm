@@ -1,0 +1,386 @@
+/* 
+  MICROSOFT FLUENT DESIGN SYSTEM
+  ---------------------------------
+  Professional design system for EduPlatform LMS
+*/
+
+:root {
+    /* Microsoft Fluent Colors */
+    --color-primary: #0078D4;
+    --color-primary-dark: #005A9E;
+    --color-primary-light: #50E6FF;
+
+    --color-bg: #F3F2F1;
+    --color-bg-layer: #FFFFFF;
+    --color-card: #FFFFFF;
+    --color-surface: #FAF9F8;
+
+    --color-text-primary: #323130;
+    --color-text-secondary: #605E5C;
+    --color-text-tertiary: #8A8886;
+    --color-text-disabled: #A19F9D;
+
+    --color-border: #EDEBE9;
+    --color-border-strong: #8A8886;
+
+    /* Fluent Border Radius */
+    --radius-sm: 2px;
+    --radius-md: 4px;
+    --radius-lg: 8px;
+
+    /* Fluent Shadows (Depth) */
+    --shadow-depth-4: 0 1.6px 3.6px rgba(0, 0, 0, 0.132), 0 0.3px 0.9px rgba(0, 0, 0, 0.108);
+    --shadow-depth-8: 0 3.2px 7.2px rgba(0, 0, 0, 0.132), 0 0.6px 1.8px rgba(0, 0, 0, 0.108);
+    --shadow-depth-16: 0 6.4px 14.4px rgba(0, 0, 0, 0.132), 0 1.2px 3.6px rgba(0, 0, 0, 0.108);
+    --shadow-depth-64: 0 25.6px 57.6px rgba(0, 0, 0, 0.22), 0 4.8px 14.4px rgba(0, 0, 0, 0.18);
+
+    /* Focus */
+    --focus-border: 2px solid #323130;
+    --focus-inner-border: 2px solid #FFFFFF;
+}
+
+body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Helvetica Neue', sans-serif;
+    background-color: var(--color-bg);
+    color: var(--color-text-primary);
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* 
+   FLUENT BUTTONS 
+*/
+
+.btn-fluent {
+    border: 1px solid transparent;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 20px;
+    transition: all 0.1s cubic-bezier(0.1, 0.9, 0.2, 1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    user-select: none;
+    border-radius: var(--radius-md);
+    padding: 5px 12px;
+    min-height: 32px;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-fluent:hover::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.1);
+    pointer-events: none;
+}
+
+.btn-fluent:active {
+    transform: scale(0.98);
+}
+
+/* Primary Button */
+.btn-primary-fluent {
+    background-color: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+}
+
+.btn-primary-fluent:hover {
+    background-color: var(--color-primary-dark);
+    border-color: var(--color-primary-dark);
+}
+
+.btn-primary-fluent:active {
+    background-color: #004578;
+}
+
+/* Secondary/Default Button */
+.btn-secondary-fluent {
+    background-color: var(--color-bg-layer);
+    color: var(--color-text-primary);
+    border-color: var(--color-border-strong);
+}
+
+.btn-secondary-fluent:hover {
+    background-color: var(--color-surface);
+    border-color: var(--color-text-secondary);
+}
+
+/* Subtle Button */
+.btn-subtle-fluent {
+    background-color: transparent;
+    color: var(--color-text-primary);
+    border-color: transparent;
+}
+
+.btn-subtle-fluent:hover {
+    background-color: var(--color-surface);
+}
+
+/* Link Button */
+.btn-link-fluent {
+    background-color: transparent;
+    color: var(--color-primary);
+    border-color: transparent;
+    padding: 0;
+    min-height: auto;
+    font-weight: 400;
+}
+
+.btn-link-fluent:hover {
+    text-decoration: underline;
+}
+
+.btn-link-fluent:hover::before {
+    display: none;
+}
+
+/* 
+   FLUENT INPUTS 
+*/
+.input-fluent {
+    width: 100%;
+    background-color: var(--color-bg-layer);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-md);
+    border-bottom-width: 2px;
+    padding: 8px 12px;
+    font-size: 14px;
+    font-family: 'Segoe UI', sans-serif;
+    color: var(--color-text-primary);
+    outline: none;
+    transition: all 0.1s ease;
+    min-height: 32px;
+}
+
+.input-fluent::placeholder {
+    color: var(--color-text-tertiary);
+}
+
+.input-fluent:hover {
+    border-color: var(--color-text-secondary);
+}
+
+.input-fluent:focus {
+    border-color: var(--color-primary);
+    border-bottom-color: var(--color-primary);
+    border-bottom-width: 2px;
+}
+
+/* 
+   FLUENT CARDS
+*/
+.card-fluent {
+    background-color: var(--color-card);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-depth-4);
+    border: 1px solid var(--color-border);
+    transition: all 0.2s cubic-bezier(0.1, 0.9, 0.2, 1);
+}
+
+.card-fluent-hoverable:hover {
+    box-shadow: var(--shadow-depth-8);
+    transform: translateY(-2px);
+}
+
+.card-fluent-interactive:hover {
+    box-shadow: var(--shadow-depth-16);
+    border-color: var(--color-border-strong);
+    transform: translateY(-4px);
+}
+
+/* 
+   ACRYLIC MATERIAL (Fluent's signature effect)
+*/
+.acrylic {
+    background-color: rgba(243, 242, 241, 0.9);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.acrylic-dark {
+    background-color: rgba(50, 49, 48, 0.7);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+}
+
+/* 
+   REVEAL HIGHLIGHT (Fluent interactive effect)
+*/
+.reveal {
+    position: relative;
+    overflow: hidden;
+}
+
+.reveal::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, transparent 70%);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+    pointer-events: none;
+    opacity: 0;
+}
+
+.reveal:hover::before {
+    width: 300px;
+    height: 300px;
+    opacity: 1;
+}
+
+/* 
+   FLUENT TYPOGRAPHY
+*/
+.text-hero {
+    font-size: 60px;
+    font-weight: 600;
+    line-height: 72px;
+    letter-spacing: -0.02em;
+}
+
+.text-title {
+    font-size: 28px;
+    font-weight: 600;
+    line-height: 36px;
+}
+
+.text-subtitle {
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 28px;
+}
+
+.text-body-large {
+    font-size: 16px;
+    line-height: 24px;
+}
+
+.text-body {
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.text-caption {
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--color-text-secondary);
+}
+
+@media (max-width: 768px) {
+    .text-hero {
+        font-size: 40px;
+        line-height: 52px;
+    }
+
+    .text-title {
+        font-size: 24px;
+        line-height: 32px;
+    }
+}
+
+/* UTILITIES */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Smooth Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fadeInUp 0.3s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
+}
+
+/* Navigation Specific */
+.nav-link-fluent {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--color-text-primary);
+    transition: color 0.1s ease;
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    display: inline-flex;
+    align-items: center;
+}
+
+.nav-link-fluent:hover {
+    color: var(--color-primary);
+    background-color: var(--color-surface);
+}
+
+.nav-link-fluent.active {
+    color: var(--color-primary);
+    background-color: rgba(0, 120, 212, 0.1);
+}
+
+/* Sidebar Navigation */
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--color-text-primary);
+    text-decoration: none;
+    transition: all 0.1s ease;
+}
+
+.sidebar-link:hover {
+    background-color: var(--color-surface);
+}
+
+.sidebar-link.active {
+    background-color: rgba(0, 120, 212, 0.1);
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
+.sidebar-link ion-icon {
+    font-size: 20px;
+}
+
+/* Command Bar (Fluent Navigation) */
+.command-bar {
+    background-color: var(--color-card);
+    border-bottom: 1px solid var(--color-border);
+    height: 48px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 8px;
+}
+
+/* DaisyUI Overrides */
+.btn {
+    text-transform: none;
+}

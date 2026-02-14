@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Materi Pelajaran - Pesantren Teknologi Majapahit</title>
+    <link rel="icon" type="image/x-icon" href="../assets/images/favicon.ico">
+
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.1.0/dist/full.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/utils/supabase-client.js"></script>
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="stylesheet" href="../assets/css/sidebar.css">
+    <style>
+        [x-cloak] {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body class="bg-[#F3F2F1] text-[#323130]" x-data="lessonViewer" data-active-page="lesson">
+
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar Component (dynamically loaded) -->
+        <div id="app-sidebar"></div>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto">
+
+            <!-- Top Navigation / Breadcrumb -->
+            <div class="bg-white border-b border-[#EDEBE9] sticky top-0 z-20">
+                <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <a :href="`../course/view.html?id=${course?.id}`"
+                            class="w-8 h-8 rounded-full hover:bg-[#F3F2F1] flex items-center justify-center text-[#605E5C] transition-colors"
+                            title="Back to Course">
+                            <ion-icon name="arrow-back" class="text-xl"></ion-icon>
+                        </a>
+                        <div class="h-6 w-px bg-[#EDEBE9]"></div>
+                        <div class="flex flex-col">
+                            <span class="text-caption text-[#605E5C] truncate max-w-[200px]"
+                                x-text="course?.title || 'Loading...'"></span>
+                            <span class="text-body font-semibold truncate max-w-[300px]"
+                                x-text="lesson?.title || 'Loading...'"></span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <button @click="markComplete"
+                            :class="isCompleted ? 'bg-green-100 text-green-700 border-green-200' : 'bg-white text-[#323130] border-[#8A8886] hover:bg-[#F3F2F1]'"
+                            class="btn-fluent border px-4 py-2 h-auto min-h-0 text-sm font-semibold flex items-center gap-2 transition-all">
+                            <ion-icon :name="isCompleted ? 'checkmark-circle' : 'checkmark-circle-outline'"
+                                class="text-lg"></ion-icon>
+                            <span x-text="isCompleted ? 'Selesai' : 'Tandai Selesai'"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="max-w-6xl mx-auto px-6 py-8">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+                    <!-- Left Column: Content -->
+                    <div class="lg:col-span-2 space-y-6">
+
+                        <!-- Video Player -->
+                        <div class="bg-black rounded-xl overflow-hidden shadow-lg aspect-video relative group">
+                            <template x-if="loading">
+                                <div class="absolute inset-0 flex items-center justify-center text-white/50">
+                                    <span class="loading loading-spinner loading-lg"></span>
+                                </div>
+                            </template>
+
+                            <template x-if="!loading && lesson">
+                                <div class="w-full h-full">
+                                    <!-- YouTube Embed -->
+                                    <template x-if="isYouTube(lesson.video_url)">
+                                        <iframe :src="getYouTubeEmbed(lesson.video_url)" class="w-full h-full"
+                                            frameborder="0"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowfullscreen>
+                                        </iframe>
+                                    </template>
+
+                                    <!-- Direct Video -->
+                                    <template x-if="!isYouTube(lesson.video_url) && lesson.video_url">
+                                        <video :src="lesson.video_url" class="w-full h-full" controls
+                                            controlsList="nodownload"></video>
+                                    </template>
+
+                                    <!-- No Video Placeholder -->
+                                    <div x-show="!lesson.video_url"
+                                        class="w-full h-full flex flex-col items-center justify-center text-white/60 bg-[#201F1E]">
+                                        <ion-icon name="document-text-outline" class="text-6xl mb-4"></ion-icon>
+                                        <p class="text-lg font-medium">Materi Bacaan</p>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+
+                        <!-- Content & Navigation -->
+                        <div class="card-fluent p-8 space-y-6">
+                            <div class="flex justify-between items-start">
+                                <h1 class="text-2xl font-bold text-[#323130]" x-text="lesson?.title"></h1>
+                            </div>
+
+                            <div class="prose max-w-none text-[#323130]" x-html="formatContent(lesson?.content)"></div>
+
+                            <!-- Attachment Section -->
+                            <div x-show="lesson?.attachment_url"
+                                class="mt-6 p-4 bg-[#F3F2F1] rounded-lg border border-[#EDEBE9] flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div
+                                        class="w-10 h-10 bg-white rounded-lg flex items-center justify-center text-[#0078D4] shadow-sm">
+                                        <ion-icon name="attach-outline" class="text-xl"></ion-icon>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-semibold text-[#323130]">Materi Tambahan</h4>
+                                        <p class="text-xs text-[#605E5C]">Unduh file lampiran untuk perbanyak pemahaman
+                                        </p>
+                                    </div>
+                                </div>
+                                <a :href="lesson?.attachment_url" target="_blank"
+                                    class="btn-fluent bg-white border border-[#8A8886] text-[#323130] hover:bg-gray-50 shadow-sm text-sm px-4 py-2 flex items-center">
+                                    Download
+                                    <ion-icon name="download-outline" class="ml-2"></ion-icon>
+                                </a>
+                            </div>
+
+                            <!-- Navigation Buttons -->
+                            <div class="flex items-center justify-between pt-8 border-t border-[#EDEBE9] mt-8">
+                                <button @click="prevLesson" :disabled="!prevLessonId"
+                                    class="btn-fluent btn-secondary-fluent text-sm px-4 py-2 h-auto min-h-0 disabled:opacity-50 disabled:cursor-not-allowed">
+                                    <ion-icon name="arrow-back-outline" class="mr-2"></ion-icon>
+                                    Sebelumnya
+                                </button>
+
+                                <button @click="nextLesson" :disabled="!nextLessonId"
+                                    class="btn-fluent btn-primary-fluent text-sm px-4 py-2 h-auto min-h-0 disabled:opacity-50 disabled:cursor-not-allowed">
+                                    Selanjutnya
+                                    <ion-icon name="arrow-forward-outline" class="ml-2"></ion-icon>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Right Column: Module List -->
+                    <div class="lg:col-span-1 space-y-6">
+                        <div
+                            class="card-fluent p-0 overflow-hidden flex flex-col max-h-[calc(100vh-140px)] sticky top-24">
+                            <div class="p-4 border-b border-[#EDEBE9] bg-[#FAF9F8]">
+                                <h3 class="font-semibold text-body-large">Daftar Materi</h3>
+                                <p class="text-caption text-[#605E5C]"
+                                    x-text="(moduleLessons?.length || 0) + ' Pelajaran'"></p>
+                            </div>
+
+                            <div class="overflow-y-auto flex-1">
+                                <template x-for="(l, index) in moduleLessons" :key="l.id">
+                                    <a :href="`view.html?id=${l.id}`"
+                                        class="flex items-start gap-3 p-4 hover:bg-[#F3F2F1] transition-colors border-l-[3px]"
+                                        :class="l.id === lesson?.id ? 'bg-[#EFF6FC] border-[#0078D4]' : 'border-transparent'">
+
+                                        <div class="mt-0.5">
+                                            <ion-icon
+                                                :name="l.id === lesson?.id ? 'play-circle' : 'play-circle-outline'"
+                                                class="text-lg"
+                                                :class="l.id === lesson?.id ? 'text-[#0078D4]' : 'text-[#8A8886]'"></ion-icon>
+                                        </div>
+
+                                        <div>
+                                            <div class="text-sm font-semibold"
+                                                :class="l.id === lesson?.id ? 'text-[#0078D4]' : 'text-[#323130]'"
+                                                x-text="l.title"></div>
+                                            <div class="text-xs text-[#605E5C] mt-1 line-clamp-1">Video • 10 min</div>
+                                        </div>
+                                    </a>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/components/sidebar.js"></script>
+    <script>
+        document.addEventListener('alpine:init', () => {
+            // Corrected component name to 'lessonViewer' to match x-data
+            Alpine.data('lessonViewer', () => ({
+                course: null,
+                lesson: null,
+                moduleLessons: [],
+                prevLessonId: null,
+                nextLessonId: null,
+                isCompleted: false,
+                loading: true,
+                session: null,
+
+                async init() {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const lessonId = urlParams.get('id');
+
+                    if (!lessonId) {
+                        window.location.href = '../course/catalog.html';
+                        return;
+                    }
+
+                    const { data: { session } } = await supabase.auth.getSession();
+                    this.session = session;
+
+                    await this.loadLessonData(lessonId);
+                    this.loading = false;
+                },
+
+                async loadLessonData(lessonId) {
+                    try {
+                        // 1. Fetch current lesson
+                        const { data: lesson, error } = await supabase
+                            .from('lessons')
+                            .select('*')
+                            .eq('id', lessonId)
+                            .single();
+
+                        if (error) throw error;
+                        this.lesson = lesson;
+
+                        // 2. Fetch Module and Course info (Separate queries to avoid 400 bad request with deep nesting)
+                        const { data: module } = await supabase
+                            .from('modules')
+                            .select('*, courses(*)')
+                            .eq('id', lesson.module_id)
+                            .single();
+
+                        if (module) {
+                            this.course = module.courses; // Assuming mapped correctly
+
+                            // 3. Fetch all lessons in this module for navigation/sidebar
+                            const { data: lessons } = await supabase
+                                .from('lessons')
+                                .select('id, title, order_index')
+                                .eq('module_id', module.id)
+                                .order('order_index', { ascending: true })
+                                .order('created_at', { ascending: true });
+
+                            this.moduleLessons = lessons || [];
+
+                            // Determine Prev/Next
+                            const currentIndex = this.moduleLessons.findIndex(l => l.id === lesson.id);
+                            if (currentIndex > 0) {
+                                this.prevLessonId = this.moduleLessons[currentIndex - 1].id;
+                            }
+                            if (currentIndex < this.moduleLessons.length - 1) {
+                                this.nextLessonId = this.moduleLessons[currentIndex + 1].id;
+                            }
+                        }
+
+                        // 4. Check completion status
+                        if (this.session) {
+                            const { data } = await supabase
+                                .from('lesson_completions')
+                                .select('id')
+                                .eq('user_id', this.session.user.id)
+                                .eq('lesson_id', lessonId)
+                                .maybeSingle();
+
+                            if (data) this.isCompleted = true;
+                        }
+
+                    } catch (err) {
+                        console.error('Error loading lesson:', err);
+                        // alert('Gagal memuat pelajaran');
+                    }
+                },
+
+                async markComplete() {
+                    if (!this.session || this.isCompleted) return;
+
+                    try {
+                        const { error } = await supabase
+                            .from('lesson_completions')
+                            .insert({
+                                user_id: this.session.user.id,
+                                lesson_id: this.lesson.id
+                            });
+
+                        if (!error) {
+                            this.isCompleted = true;
+                            // Optional: update enrollment progress
+                        }
+                    } catch (err) {
+                        console.error('Error marking complete:', err);
+                    }
+                },
+
+                prevLesson() {
+                    if (this.prevLessonId) {
+                        window.location.href = `view.html?id=${this.prevLessonId}`;
+                    }
+                },
+
+                nextLesson() {
+                    if (this.nextLessonId) {
+                        window.location.href = `view.html?id=${this.nextLessonId}`;
+                    }
+                },
+
+                isYouTube(url) {
+                    return url && (url.includes('youtube.com') || url.includes('youtu.be'));
+                },
+
+                getYouTubeEmbed(url) {
+                    if (!url) return '';
+                    let videoId = '';
+                    if (url.includes('youtube.com/watch?v=')) {
+                        videoId = url.split('v=')[1]?.split('&')[0];
+                    } else if (url.includes('youtu.be/')) {
+                        videoId = url.split('youtu.be/')[1]?.split('?')[0];
+                    } else if (url.includes('youtube.com/embed/')) {
+                        return url;
+                    }
+                    return videoId ? `https://www.youtube.com/embed/${videoId}?rel=0` : url;
+                },
+
+                formatContent(content) {
+                    if (!content) return '';
+                    // Simple newline to break conversion
+                    return content.replace(/\n/g, '<br>');
+                }
+            }))
+        })
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Pesantren Teknologi Majapahit</title>
+    <link rel="icon" type="image/x-icon" href="../assets/images/favicon.ico">
+
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- Tailwind CSS & DaisyUI -->
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.1.0/dist/full.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/utils/supabase-client.js"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="stylesheet" href="../assets/css/sidebar.css">
+
+    <style>
+        [x-cloak] {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body class="bg-[#F3F2F1] text-[#323130]" x-data="settingsPage" data-active-page="settings">
+
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar Component (dynamically loaded) -->
+        <div id="app-sidebar"></div>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto">
+            <!-- Header -->
+            <div class="bg-white border-b border-[#EDEBE9] sticky top-0 z-20">
+                <div class="max-w-4xl mx-auto px-6 h-16 flex items-center">
+                    <h1 class="text-title font-semibold">Settings</h1>
+                </div>
+            </div>
+
+            <div class="max-w-4xl mx-auto px-6 py-8 space-y-8">
+
+                <!-- Profile Settings -->
+                <section class="card-fluent p-8 animate-fade-in">
+                    <h2 class="text-xl font-bold mb-1 flex items-center gap-2">
+                        <ion-icon name="person-circle-outline" class="text-[#0078D4] text-2xl"></ion-icon>
+                        Public Profile
+                    </h2>
+                    <p class="text-caption text-[#605E5C] mb-6">Manage how others see you on the platform.</p>
+
+                    <form @submit.prevent="updateProfile" class="space-y-6 max-w-lg">
+
+                        <!-- Avatar Upload -->
+                        <div class="flex items-center gap-6">
+                            <div class="relative group">
+                                <div
+                                    class="w-24 h-24 rounded-full bg-[#EFF6FC] border-2 border-[#E1DFDD] flex items-center justify-center overflow-hidden">
+                                    <template x-if="avatarPreview">
+                                        <img :src="avatarPreview" class="w-full h-full object-cover">
+                                    </template>
+                                    <template x-if="!avatarPreview">
+                                        <span class="text-3xl font-bold text-[#0078D4]" x-text="getInitials()"></span>
+                                    </template>
+                                </div>
+                                <label
+                                    class="absolute bottom-0 right-0 bg-white border border-[#EDEBE9] shadow-sm rounded-full p-1.5 cursor-pointer hover:bg-[#F3F2F1] transition-colors">
+                                    <ion-icon name="camera-outline" class="text-lg text-[#323130]"></ion-icon>
+                                    <input type="file" @change="handleAvatarUpload" accept="image/*" class="hidden">
+                                </label>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-[#323130]">Profile Picture</h3>
+                                <p class="text-xs text-[#605E5C] mt-1">Supports JPG, PNG usually under 2MB.</p>
+                            </div>
+                        </div>
+
+                        <!-- Full Name -->
+                        <div>
+                            <label class="block text-sm font-semibold mb-1.5">Full Name</label>
+                            <input type="text" x-model="profile.full_name" class="input-fluent"
+                                placeholder="Your full name">
+                        </div>
+
+                        <!-- Email (Read Only) -->
+                        <div>
+                            <label class="block text-sm font-semibold mb-1.5">Email Address</label>
+                            <input type="email" x-model="profile.email"
+                                class="input-fluent bg-[#F3F2F1] text-[#605E5C] cursor-not-allowed" readonly>
+                            <p class="text-xs text-[#605E5C] mt-1">Email cannot be changed directly.</p>
+                        </div>
+
+                        <div class="pt-4">
+                            <button type="submit" class="btn-fluent btn-primary-fluent px-6" :disabled="loading">
+                                <span x-show="!loading">Save Profile</span>
+                                <span x-show="loading" class="flex items-center gap-2">
+                                    <span class="loading loading-spinner loading-xs"></span> Saving...
+                                </span>
+                            </button>
+                        </div>
+                    </form>
+                </section>
+
+                <!-- Security Settings -->
+                <section class="card-fluent p-8 animate-fade-in" style="animation-delay: 0.1s">
+                    <h2 class="text-xl font-bold mb-1 flex items-center gap-2">
+                        <ion-icon name="shield-checkmark-outline" class="text-[#0078D4] text-2xl"></ion-icon>
+                        Security
+                    </h2>
+                    <p class="text-caption text-[#605E5C] mb-6">Update your password to keep your account safe.</p>
+
+                    <form @submit.prevent="updatePassword" class="space-y-6 max-w-lg">
+                        <div>
+                            <label class="block text-sm font-semibold mb-1.5">New Password</label>
+                            <div class="relative">
+                                <input :type="showPassword ? 'text' : 'password'" x-model="newPassword"
+                                    class="input-fluent pr-10" placeholder="Minimum 6 characters">
+                                <button type="button" @click="showPassword = !showPassword"
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 text-[#605E5C] hover:text-[#323130]">
+                                    <ion-icon :name="showPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold mb-1.5">Confirm Password</label>
+                            <input type="password" x-model="confirmPassword" class="input-fluent"
+                                placeholder="Re-enter new password">
+                        </div>
+
+                        <div class="pt-4">
+                            <button type="submit"
+                                class="btn-fluent bg-white border border-[#8A8886] hover:bg-[#F3F2F1] shadow-sm px-6"
+                                :disabled="passwordLoading || !newPassword">
+                                <span x-show="!passwordLoading">Update Password</span>
+                                <span x-show="passwordLoading" class="flex items-center gap-2">
+                                    <span class="loading loading-spinner loading-xs"></span> Updating...
+                                </span>
+                            </button>
+                        </div>
+                    </form>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Notification Toast -->
+    <div class="toast toast-end z-50" x-show="notification.show" x-transition.duration.300ms>
+        <div class="alert shadow-lg border"
+            :class="notification.type === 'success' ? 'alert-success bg-green-50 border-green-200 text-green-800' : 'alert-error bg-red-50 border-red-200 text-red-800'">
+            <ion-icon :name="notification.type === 'success' ? 'checkmark-circle' : 'alert-circle'"
+                class="text-xl"></ion-icon>
+            <span x-text="notification.message"></span>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/components/sidebar.js"></script>
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('settingsPage', () => ({
+                loading: false,
+                passwordLoading: false,
+                profile: {
+                    id: '',
+                    full_name: '',
+                    email: '',
+                    avatar_url: ''
+                },
+                avatarPreview: null,
+                avatarFile: null,
+                newPassword: '',
+                confirmPassword: '',
+                showPassword: false,
+                notification: {
+                    show: false,
+                    message: '',
+                    type: 'success'
+                },
+
+                async init() {
+                    const { data: { session } } = await supabase.auth.getSession();
+                    if (!session) {
+                        window.location.href = '../auth/login.html';
+                        return;
+                    }
+                    this.fetchProfile(session.user.id);
+                },
+
+                async fetchProfile(userId) {
+                    const { data, error } = await supabase
+                        .from('profiles')
+                        .select('*')
+                        .eq('id', userId)
+                        .single();
+
+                    if (data) {
+                        this.profile = data;
+                        if (data.avatar_url) this.avatarPreview = data.avatar_url;
+                    }
+                },
+
+                getInitials() {
+                    return this.profile.full_name
+                        ? this.profile.full_name.charAt(0).toUpperCase()
+                        : (this.profile.email ? this.profile.email.charAt(0).toUpperCase() : 'U');
+                },
+
+                handleAvatarUpload(event) {
+                    const file = event.target.files[0];
+                    if (!file) return;
+
+                    // Preview
+                    const reader = new FileReader();
+                    reader.onload = (e) => this.avatarPreview = e.target.result;
+                    reader.readAsDataURL(file);
+
+                    this.avatarFile = file;
+                },
+
+                async updateProfile() {
+                    this.loading = true;
+                    try {
+                        let avatarUrl = this.profile.avatar_url;
+
+                        // Upload new avatar if selected
+                        if (this.avatarFile) {
+                            const fileExt = this.avatarFile.name.split('.').pop();
+                            const fileName = `${this.profile.id}/${Date.now()}.${fileExt}`;
+
+                            const { error: uploadError } = await supabase.storage
+                                .from('avatars')
+                                .upload(fileName, this.avatarFile, { upsert: true });
+
+                            if (uploadError) throw uploadError;
+
+                            const { data: { publicUrl } } = supabase.storage
+                                .from('avatars')
+                                .getPublicUrl(fileName);
+
+                            avatarUrl = publicUrl;
+                        }
+
+                        // Update Profile Data
+                        const { error } = await supabase
+                            .from('profiles')
+                            .update({
+                                full_name: this.profile.full_name,
+                                avatar_url: avatarUrl
+                            })
+                            .eq('id', this.profile.id);
+
+                        if (error) throw error;
+
+                        this.showNotification('Profile updated successfully!', 'success');
+
+                        // Small delay to allow sidebar to refresh its check if needed (though it requires reload)
+                    } catch (err) {
+                        this.showNotification(err.message, 'error');
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+
+                async updatePassword() {
+                    if (this.newPassword !== this.confirmPassword) {
+                        this.showNotification('Passwords do not match.', 'error');
+                        return;
+                    }
+                    if (this.newPassword.length < 6) {
+                        this.showNotification('Password must be at least 6 characters.', 'error');
+                        return;
+                    }
+
+                    this.passwordLoading = true;
+                    try {
+                        const { error } = await supabase.auth.updateUser({
+                            password: this.newPassword
+                        });
+
+                        if (error) throw error;
+
+                        this.showNotification('Password changed successfully!', 'success');
+                        this.newPassword = '';
+                        this.confirmPassword = '';
+                    } catch (err) {
+                        this.showNotification(err.message, 'error');
+                    } finally {
+                        this.passwordLoading = false;
+                    }
+                },
+
+                showNotification(msg, type = 'success') {
+                    this.notification.message = msg;
+                    this.notification.type = type;
+                    this.notification.show = true;
+                    setTimeout(() => this.notification.show = false, 3000);
+                }
+            }))
+        })
+    </script>
+</body>
+
+</html>

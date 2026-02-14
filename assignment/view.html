@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Tugas - Pesantren Teknologi Majapahit</title>
+    <link rel="icon" type="image/x-icon" href="../assets/images/favicon.ico">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.1.0/dist/full.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/utils/supabase-client.js"></script>
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="stylesheet" href="../assets/css/sidebar.css">
+</head>
+
+<body class="bg-[#F3F2F1] text-[#323130]" x-data="assignmentView" data-active-page="course">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar Component (dynamically loaded) -->
+        <div id="app-sidebar"></div>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto relative">
+            <!-- Header -->
+            <div class="border-b border-[#EDEBE9] bg-white sticky top-0 z-10">
+                <div class="max-w-6xl mx-auto px-6 py-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                            <button @click="goBack"
+                                class="p-2 rounded-full hover:bg-[#F3F2F1] text-[#605E5C] transition-colors">
+                                <ion-icon name="arrow-back" class="text-xl"></ion-icon>
+                            </button>
+                            <div>
+                                <div class="text-caption text-[#8A8886] uppercase tracking-wide font-semibold">Tugas
+                                </div>
+                                <h1 class="text-subtitle font-semibold" x-text="assignment?.title || 'Loading...'"></h1>
+                            </div>
+                        </div>
+
+                        <!-- Instructor Toggle/Badge -->
+                        <template x-if="isInstructor">
+                            <div
+                                class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-caption font-semibold flex items-center gap-2">
+                                <ion-icon name="school"></ion-icon>
+                                Mode Pengajar
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+
+            <div class="max-w-6xl mx-auto px-6 py-8" x-cloak>
+
+                <!-- STUDENT VIEW -->
+                <template x-if="!isInstructor">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <!-- Left Column: Assignment Details -->
+                        <div class="lg:col-span-2 space-y-6">
+                            <div class="card-fluent p-8 animate-slide-up">
+                                <div class="flex justify-between items-start mb-6">
+                                    <div>
+                                        <h2 class="text-title mb-2">Instruksi</h2>
+                                        <p class="text-caption text-[#605E5C]">
+                                            Tenggat waktu: <span class="font-semibold"
+                                                x-text="formatDate(assignment?.due_date)"></span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="prose max-w-none text-body text-[#323130]">
+                                    <p x-text="assignment?.description || 'Tidak ada instruksi khusus.'"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Submission -->
+                        <div class="lg:col-span-1 space-y-6">
+                            <div class="card-fluent p-6 animate-slide-up" style="animation-delay: 0.1s">
+                                <h3 class="text-body-large font-semibold mb-4">Pengumpulan Tugas</h3>
+
+                                <!-- Status Banner -->
+                                <div class="mb-6">
+                                    <template x-if="submission">
+                                        <div
+                                            class="bg-green-100 text-green-800 px-4 py-3 rounded-lg flex items-center gap-3">
+                                            <ion-icon name="checkmark-circle" class="text-xl"></ion-icon>
+                                            <div>
+                                                <div class="text-body font-semibold">Sudah Dikumpulkan</div>
+                                                <div class="text-caption" x-text="formatDate(submission.created_at)">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </template>
+                                    <template x-if="!submission">
+                                        <div
+                                            class="bg-orange-100 text-orange-800 px-4 py-3 rounded-lg flex items-center gap-3">
+                                            <ion-icon name="time" class="text-xl"></ion-icon>
+                                            <div>
+                                                <div class="text-body font-semibold">Belum Dikumpulkan</div>
+                                                <div class="text-caption">Silakan upload tugas Anda</div>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+
+                                <!-- Upload Area -->
+                                <template x-if="!submission">
+                                    <div class="space-y-4">
+                                        <div class="border-2 border-dashed border-[#EDEBE9] rounded-xl p-6 text-center hover:border-[#0078D4] hover:bg-[#F3F2F1] transition-all cursor-pointer group"
+                                            @click="$refs.fileInput.click()"
+                                            :class="file ? 'border-solid border-[#0078D4] bg-[#F3F2F1]' : ''">
+
+                                            <input x-ref="fileInput" type="file" @change="file = $event.target.files[0]"
+                                                class="hidden" />
+
+                                            <div x-show="!file">
+                                                <div
+                                                    class="w-10 h-10 bg-white rounded-full mx-auto flex items-center justify-center shadow-sm text-[#0078D4] text-xl mb-3 group-hover:scale-110 transition-transform">
+                                                    <ion-icon name="cloud-upload-outline"></ion-icon>
+                                                </div>
+                                                <p class="text-body font-semibold text-[#0078D4]">Upload File</p>
+                                                <p class="text-caption text-[#8A8886] mt-1">PDF, DOCX, ZIP (Max 10MB)
+                                                </p>
+                                            </div>
+
+                                            <div x-show="file" class="relative">
+                                                <div
+                                                    class="w-10 h-10 bg-white rounded-full mx-auto flex items-center justify-center shadow-sm text-[#0078D4] text-xl mb-3">
+                                                    <ion-icon name="document-text-outline"></ion-icon>
+                                                </div>
+                                                <p class="text-body font-semibold text-[#323130] truncate px-2"
+                                                    x-text="file?.name"></p>
+                                                <button type="button"
+                                                    @click.stop="file = null; $refs.fileInput.value = ''"
+                                                    class="text-caption text-red-600 hover:underline mt-1">Hapus</button>
+                                            </div>
+                                        </div>
+
+                                        <textarea x-model="comment"
+                                            class="input-fluent w-full h-24 resize-none text-body"
+                                            placeholder="Tambahkan komentar (opsional)..."></textarea>
+
+                                        <button @click="submitAssignment"
+                                            class="btn-fluent btn-primary-fluent w-full justify-center"
+                                            :disabled="uploading || !file">
+                                            <span x-show="!uploading">Kumpulkan Tugas</span>
+                                            <span x-show="uploading" class="flex items-center gap-2">
+                                                <span class="loading loading-spinner loading-xs"></span>
+                                                Mengupload...
+                                            </span>
+                                        </button>
+                                    </div>
+                                </template>
+
+                                <!-- Submitted View & Grades -->
+                                <template x-if="submission">
+                                    <div class="space-y-4">
+                                        <div class="p-4 bg-[#F3F2F1] rounded-lg border border-[#EDEBE9]">
+                                            <div class="flex items-center gap-3 mb-2">
+                                                <ion-icon name="document-text"
+                                                    class="text-[#0078D4] text-xl"></ion-icon>
+                                                <a :href="submission.file_url" target="_blank"
+                                                    class="text-body font-semibold text-[#0078D4] hover:underline truncate flex-1">
+                                                    Lihat File Lampiran
+                                                </a>
+                                            </div>
+                                            <div x-show="submission.content"
+                                                class="text-body text-[#605E5C] mt-2 pt-2 border-t border-[#EDEBE9]">
+                                                <p class="text-caption font-semibold mb-1">Komentar:</p>
+                                                <p x-text="submission.content"></p>
+                                            </div>
+                                        </div>
+
+                                        <!-- Grading Result -->
+                                        <div x-show="submission.grade !== null"
+                                            class="mt-4 pt-4 border-t border-[#EDEBE9]">
+                                            <div class="text-caption font-semibold uppercase text-[#8A8886] mb-2">Nilai
+                                            </div>
+                                            <div class="text-3xl font-bold text-[#323130]">
+                                                <span x-text="submission.grade"></span><span
+                                                    class="text-lg text-[#8A8886] font-normal">/100</span>
+                                            </div>
+                                            <div x-show="submission.feedback"
+                                                class="mt-2 text-body text-[#605E5C] bg-white p-3 rounded border border-[#EDEBE9]">
+                                                <p class="text-caption font-semibold mb-1">Umpan Balik Pengajar:</p>
+                                                <p x-text="submission.feedback"></p>
+                                            </div>
+                                        </div>
+                                        <div x-show="submission.grade === null"
+                                            class="mt-2 text-caption text-[#8A8886] italic text-center">
+                                            Belum dinilai oleh pengajar.
+                                        </div>
+                                    </div>
+                                </template>
+
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- INSTRUCTOR VIEW -->
+                <template x-if="isInstructor">
+                    <div class="space-y-8 animate-slide-up">
+                        <!-- Instructions Header -->
+                        <div class="card-fluent p-6">
+                            <h2 class="text-body-large font-semibold mb-2">Instruksi Tugas</h2>
+                            <p class="text-body text-[#605E5C]" x-text="assignment?.description"></p>
+                        </div>
+
+                        <!-- Submissions Table -->
+                        <div class="card-fluent overflow-hidden">
+                            <div
+                                class="px-6 py-4 border-b border-[#EDEBE9] flex justify-between items-center bg-[#F3F2F1]">
+                                <h3 class="text-body-large font-semibold">Daftar Pengumpulan Siswa</h3>
+                                <div class="text-caption text-[#605E5C]">
+                                    <span x-text="instructorSubmissions.length"></span> pengumpulan
+                                </div>
+                            </div>
+
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr class="bg-white border-b border-[#EDEBE9]">
+                                            <th class="px-6 py-3 text-caption font-semibold text-[#8A8886] uppercase">
+                                                Nama Siswa</th>
+                                            <th class="px-6 py-3 text-caption font-semibold text-[#8A8886] uppercase">
+                                                Tanggal Kumpul</th>
+                                            <th class="px-6 py-3 text-caption font-semibold text-[#8A8886] uppercase">
+                                                File</th>
+                                            <th class="px-6 py-3 text-caption font-semibold text-[#8A8886] uppercase">
+                                                Status Nilai</th>
+                                            <th class="px-6 py-3 text-caption font-semibold text-[#8A8886] uppercase">
+                                                Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white">
+                                        <template x-for="sub in instructorSubmissions" :key="sub.id">
+                                            <tr class="border-b border-[#EDEBE9] hover:bg-[#F3F2F1] transition-colors">
+                                                <td class="px-6 py-4">
+                                                    <div class="font-semibold text-body"
+                                                        x-text="sub.profiles?.full_name || 'Unknown'"></div>
+                                                    <div class="text-caption text-[#8A8886]"
+                                                        x-text="sub.profiles?.email"></div>
+                                                </td>
+                                                <td class="px-6 py-4 text-body" x-text="formatDate(sub.created_at)">
+                                                </td>
+                                                <td class="px-6 py-4">
+                                                    <a :href="sub.file_url" target="_blank"
+                                                        class="text-[#0078D4] hover:underline flex items-center gap-1 text-body">
+                                                        <ion-icon name="attach"></ion-icon> Lihat File
+                                                    </a>
+                                                </td>
+                                                <td class="px-6 py-4">
+                                                    <span x-show="sub.grade !== null"
+                                                        class="px-2 py-1 bg-green-100 text-green-700 rounded text-caption font-bold">
+                                                        <span x-text="sub.grade"></span>/100
+                                                    </span>
+                                                    <span x-show="sub.grade === null"
+                                                        class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-caption font-semibold">
+                                                        Belum Dinilai
+                                                    </span>
+                                                </td>
+                                                <td class="px-6 py-4">
+                                                    <button @click="openGradingModal(sub)"
+                                                        class="btn-fluent btn-secondary-fluent text-sm px-3 py-1">
+                                                        Beri Nilai
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </template>
+                                        <tr x-show="instructorSubmissions.length === 0">
+                                            <td colspan="5" class="px-6 py-8 text-center text-body text-[#8A8886]">
+                                                Belum ada siswa yang mengumpulkan tugas ini.
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Grading Modal -->
+    <div x-show="gradingModalOpen"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" x-transition.opacity
+        x-cloak>
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden animate-slide-up"
+            @click.away="gradingModalOpen = false">
+            <div class="px-6 py-4 border-b border-[#EDEBE9] flex justify-between items-center bg-[#F3F2F1]">
+                <h3 class="text-body-large font-bold">Penilaian Tugas</h3>
+                <button @click="gradingModalOpen = false" class="text-[#605E5C] hover:text-black">
+                    <ion-icon name="close" class="text-xl"></ion-icon>
+                </button>
+            </div>
+
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-caption font-semibold text-[#8A8886] mb-1">Siswa</label>
+                    <div class="text-body font-semibold" x-text="gradingSubmission?.profiles?.full_name"></div>
+                </div>
+
+                <div>
+                    <label class="block text-caption font-semibold text-[#8A8886] mb-1">File Tugas</label>
+                    <a :href="gradingSubmission?.file_url" target="_blank"
+                        class="text-[#0078D4] hover:underline flex items-center gap-1 text-body">
+                        <ion-icon name="document-text"></ion-icon> Buka File Lampiran
+                    </a>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="col-span-1">
+                        <label class="block text-caption font-semibold text-[#8A8886] mb-1">Nilai (0-100)</label>
+                        <input type="number" x-model="gradingForm.score" min="0" max="100"
+                            class="input-fluent w-full text-lg font-bold">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-caption font-semibold text-[#8A8886] mb-1">Umpan Balik (Feedback)</label>
+                    <textarea x-model="gradingForm.feedback" class="input-fluent w-full h-32 resize-none"
+                        placeholder="Berikan masukan untuk siswa..."></textarea>
+                </div>
+            </div>
+
+            <div class="p-4 border-t border-[#EDEBE9] bg-[#FAF9F8] flex justify-end gap-3">
+                <button @click="gradingModalOpen = false" class="btn-fluent btn-secondary-fluent">Batal</button>
+                <button @click="submitGrade" class="btn-fluent btn-primary-fluent" :disabled="gradingLoading">
+                    <span x-show="!gradingLoading">Simpan Nilai</span>
+                    <span x-show="gradingLoading">Menyimpan...</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../assets/js/components/sidebar.js"></script>
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('assignmentView', () => ({
+                assignment: null,
+                submission: null, // Student's own submission
+                instructorSubmissions: [], // List for instructors
+                isInstructor: false,
+                assignmentId: null,
+                session: null,
+                file: null,
+                comment: '',
+                uploading: false,
+
+                // Grading Modal State
+                gradingModalOpen: false,
+                gradingSubmission: null,
+                gradingForm: { score: '', feedback: '' },
+                gradingLoading: false,
+
+                async init() {
+                    const params = new URLSearchParams(window.location.search);
+                    this.assignmentId = params.get('id');
+
+                    if (!this.assignmentId) {
+                        window.location.href = '../dashboard/student/index.html';
+                        return;
+                    }
+
+                    const { data: { session } } = await supabase.auth.getSession();
+                    this.session = session;
+                    if (!this.session) {
+                        window.location.href = '../auth/login.html';
+                        return;
+                    }
+
+                    await this.fetchAssignmentAndRole();
+                },
+
+                async fetchAssignmentAndRole() {
+                    // Fetch Assignment + Course to check Instructor ID
+                    const { data, error } = await supabase
+                        .from('assignments')
+                        .select('*, courses(instructor_id)')
+                        .eq('id', this.assignmentId)
+                        .single();
+
+                    if (error) {
+                        console.error('Error fetching assignment:', error);
+                        return;
+                    }
+
+                    this.assignment = data;
+
+                    // Check Role
+                    this.isInstructor = (this.session.user.id === data.courses.instructor_id);
+
+                    if (this.isInstructor) {
+                        await this.fetchInstructorSubmissions();
+                    } else {
+                        await this.fetchStudentSubmission();
+                    }
+                },
+
+                async fetchStudentSubmission() {
+                    const { data, error } = await supabase
+                        .from('submissions')
+                        .select('*')
+                        .eq('assignment_id', this.assignmentId)
+                        .eq('user_id', this.session.user.id)
+                        .single();
+
+                    if (data) {
+                        this.submission = data;
+                    }
+                },
+
+                async fetchInstructorSubmissions() {
+                    // Step 1: Fetch submissions
+                    const { data: submissions, error: submissionsError } = await supabase
+                        .from('submissions')
+                        .select('*')
+                        .eq('assignment_id', this.assignmentId)
+                        .order('submitted_at', { ascending: false });
+
+                    if (submissionsError) {
+                        console.error('Error fetching submissions:', submissionsError);
+                        return;
+                    }
+
+                    if (!submissions || submissions.length === 0) {
+                        this.instructorSubmissions = [];
+                        return;
+                    }
+
+                    // Step 2: Extract user IDs
+                    const userIds = submissions.map(s => s.user_id);
+
+                    // Step 3: Fetch profiles for these users
+                    const { data: profiles, error: profilesError } = await supabase
+                        .from('profiles')
+                        .select('id, full_name, email')
+                        .in('id', userIds);
+
+                    if (profilesError) {
+                        console.error('Error fetching profiles:', profilesError);
+                        return;
+                    }
+
+                    // Step 4: Map profiles to submissions
+                    this.instructorSubmissions = submissions.map(sub => ({
+                        ...sub,
+                        profiles: profiles.find(p => p.id === sub.user_id) || { full_name: 'Unknown', email: '' }
+                    }));
+                },
+
+                openGradingModal(submission) {
+                    this.gradingSubmission = submission;
+                    this.gradingForm.score = submission.grade || '';
+                    this.gradingForm.feedback = submission.feedback || '';
+                    this.gradingModalOpen = true;
+                },
+
+                async submitGrade() {
+                    if (!this.gradingSubmission) return;
+                    this.gradingLoading = true;
+
+                    const updates = {
+                        grade: parseInt(this.gradingForm.score),
+                        feedback: this.gradingForm.feedback
+                    };
+
+                    const { error } = await supabase
+                        .from('submissions')
+                        .update(updates)
+                        .eq('id', this.gradingSubmission.id);
+
+                    if (error) {
+                        alert('Gagal menyimpan nilai: ' + error.message);
+                    } else {
+                        // Update local list
+                        const index = this.instructorSubmissions.findIndex(s => s.id === this.gradingSubmission.id);
+                        if (index !== -1) {
+                            this.instructorSubmissions[index].grade = updates.grade;
+                            this.instructorSubmissions[index].feedback = updates.feedback;
+                        }
+                        this.gradingModalOpen = false;
+                    }
+                    this.gradingLoading = false;
+                },
+
+                async submitAssignment() {
+                    if (!this.file) return;
+
+                    this.uploading = true;
+                    try {
+                        // 1. Upload File
+                        const fileExt = this.file.name.split('.').pop();
+                        const fileName = `${this.session.user.id}/${Date.now()}.${fileExt}`;
+                        const { error: uploadError } = await supabase.storage
+                            .from('assignment-submissions')
+                            .upload(fileName, this.file);
+
+                        if (uploadError) throw uploadError;
+
+                        const { data: { publicUrl } } = supabase.storage
+                            .from('assignment-submissions')
+                            .getPublicUrl(fileName);
+
+                        // 2. Create Submission Record
+                        const { error: dbError } = await supabase
+                            .from('submissions')
+                            .insert({
+                                assignment_id: this.assignmentId,
+                                user_id: this.session.user.id,
+                                file_url: publicUrl,
+                                content: this.comment
+                            });
+
+                        if (dbError) throw dbError;
+
+                        await this.fetchStudentSubmission();
+                        this.file = null;
+                        this.comment = '';
+
+                    } catch (error) {
+                        alert('Error submitting assignment: ' + error.message);
+                    } finally {
+                        this.uploading = false;
+                    }
+                },
+
+                formatDate(dateString) {
+                    if (!dateString) return '-';
+                    return new Date(dateString).toLocaleDateString('id-ID', {
+                        day: 'numeric', month: 'long', year: 'numeric',
+                        hour: '2-digit', minute: '2-digit'
+                    });
+                },
+
+                goBack() {
+                    window.history.back();
+                }
+            }))
+        })
+    </script>
+</body>
+
+</html>

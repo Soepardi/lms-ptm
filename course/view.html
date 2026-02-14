@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Kursus - Pesantren Teknologi Majapahit</title>
+    <link rel="icon" type="image/x-icon" href="../assets/images/favicon.ico">
+
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.1.0/dist/full.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/utils/supabase-client.js"></script>
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="stylesheet" href="../assets/css/sidebar.css">
+
+    <style>
+        [x-cloak] {
+            display: none !important;
+        }
+
+        .course-hero-overlay {
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.8) 100%);
+        }
+    </style>
+</head>
+
+<body class="bg-[#F3F2F1] text-[#323130]" x-data="courseView" data-active-page="course">
+
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar Component (dynamically loaded) -->
+        <div id="app-sidebar"></div>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto relative">
+
+            <!-- Hero Section -->
+            <div class="relative bg-[#201F1E] text-white min-h-[400px] flex items-end">
+                <!-- Background Image -->
+                <div class="absolute inset-0 z-0">
+                    <img :src="course?.thumbnail_url || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1280&h=720&fit=crop'"
+                        class="w-full h-full object-cover opacity-60" alt="Course Thumbnail">
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#201F1E] via-[#201F1E]/60 to-transparent"></div>
+                </div>
+
+                <div class="relative z-10 w-full max-w-7xl mx-auto px-6 pb-12 pt-20">
+                    <!-- Breadcrumb -->
+                    <a href="catalog.html"
+                        class="inline-flex items-center gap-2 text-white/80 hover:text-white mb-6 text-sm font-semibold transition-colors">
+                        <ion-icon name="arrow-back"></ion-icon> Kembali ke Katalog
+                    </a>
+
+                    <div class="flex flex-col md:flex-row gap-8 items-start md:items-end justify-between">
+                        <div class="flex-1">
+                            <h1 class="text-4xl md:text-5xl font-bold mb-4 leading-tight text-shadow-sm"
+                                x-text="course?.title">Memuat Kursus...</h1>
+                            <p class="text-white/90 text-lg md:text-xl max-w-3xl mb-8 leading-relaxed font-light"
+                                x-text="course?.description"></p>
+
+                            <!-- Metadata -->
+                            <div class="flex flex-wrap items-center gap-8 mb-8">
+                                <div class="flex items-center gap-3">
+                                    <div
+                                        class="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-sm font-bold shadow-sm border border-white/10">
+                                        <span x-text="instructor?.full_name?.charAt(0) || 'I'"></span>
+                                    </div>
+                                    <div>
+                                        <div class="text-[10px] text-white/60 uppercase tracking-widest font-bold">
+                                            Instruktur</div>
+                                        <div class="font-semibold text-sm"
+                                            x-text="instructor?.full_name || 'Loading...'"></div>
+                                    </div>
+                                </div>
+                                <div class="h-8 w-px bg-white/20"></div>
+                                <div>
+                                    <div class="text-[10px] text-white/60 uppercase tracking-widest font-bold">Total
+                                        Modul</div>
+                                    <div class="font-semibold text-sm flex items-center gap-2">
+                                        <ion-icon name="layers-outline"></ion-icon>
+                                        <span x-text="(modules?.length || 0) + ' Modul'"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Enrollment Card (Floating on Desktop, Inline on Mobile) -->
+                        <div class="w-full md:w-auto shrink-0">
+                            <template x-if="isEnrolled">
+                                <div
+                                    class="bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-xl w-full md:w-80 shadow-2xl">
+                                    <div class="text-xs font-bold text-white/80 uppercase mb-2 tracking-wide">Progres
+                                        Belajar</div>
+                                    <div class="flex items-end gap-2 mb-2">
+                                        <span class="text-3xl font-bold">35%</span>
+                                        <span class="text-sm text-white/60 mb-1">Selesai</span>
+                                    </div>
+                                    <div class="w-full bg-black/30 h-1.5 rounded-full overflow-hidden mb-6">
+                                        <div class="bg-white h-full rounded-full" style="width: 35%"></div>
+                                    </div>
+                                    <button @click="continueLesson"
+                                        class="w-full btn-fluent bg-[#0078D4] text-white border-none hover:bg-[#0063b1] py-3 font-bold shadow-lg">
+                                        Lanjutkan Belajar
+                                    </button>
+                                </div>
+                            </template>
+
+                            <template x-if="!isEnrolled">
+                                <div
+                                    class="bg-white text-[#323130] p-6 rounded-xl w-full md:w-80 shadow-2xl animate-fade-in">
+                                    <div class="text-body-large font-bold mb-2">Mulai Belajar Sekarang</div>
+                                    <p class="text-caption text-[#605E5C] mb-6">Dapatkan akses penuh ke materi, tugas,
+                                        dan sertifikat.</p>
+                                    <button @click="enrollInCourse"
+                                        class="w-full btn-fluent btn-primary-fluent py-3 font-bold text-base shadow-lg">
+                                        Daftar Kursus
+                                    </button>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="max-w-7xl mx-auto px-6 py-10 space-y-8">
+
+                <!-- Tabs Navigation -->
+                <div class="border-b border-[#EDEBE9]">
+                    <div class="flex gap-8">
+                        <button @click="activeTab = 'materi'"
+                            :class="activeTab === 'materi' ? 'border-[#0078D4] text-[#0078D4] font-bold' : 'border-transparent text-[#605E5C] font-semibold hover:text-[#323130]'"
+                            class="pb-3 border-b-[3px] text-body-large transition-colors px-2 relative top-[1px]">
+                            Materi Pembelajaran
+                        </button>
+                        <button @click="activeTab = 'tugas'"
+                            :class="activeTab === 'tugas' ? 'border-[#0078D4] text-[#0078D4] font-bold' : 'border-transparent text-[#605E5C] font-semibold hover:text-[#323130]'"
+                            class="pb-3 border-b-[3px] text-body-large transition-colors px-2 relative top-[1px]">
+                            Tugas & Kuis
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tab 1: Materi -->
+                <div x-show="activeTab === 'materi'" class="animate-slide-up space-y-6">
+                    <template x-for="(module, index) in modules" :key="module.id">
+                        <div class="card-fluent p-0 overflow-hidden border border-[#EDEBE9]">
+                            <button @click="toggleModule(module.id)"
+                                class="w-full flex items-center justify-between p-6 bg-white hover:bg-[#FAF9F8] transition-colors text-left group">
+                                <div class="flex items-center gap-4">
+                                    <div
+                                        class="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-[#605E5C] font-bold text-lg group-hover:bg-[#0078D4] group-hover:text-white transition-colors">
+                                        <span x-text="index + 1"></span>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-body-large font-bold text-[#323130] mb-0.5"
+                                            x-text="module.title"></h3>
+                                        <p class="text-caption text-[#605E5C]"
+                                            x-text="(module.lessons?.length || 0) + ' Pelajaran'"></p>
+                                    </div>
+                                </div>
+                                <div
+                                    class="w-8 h-8 rounded-full hover:bg-gray-200 flex items-center justify-center transition-colors">
+                                    <ion-icon
+                                        :name="expandedModules.includes(module.id) ? 'chevron-up' : 'chevron-down'"
+                                        class="text-[#605E5C]"></ion-icon>
+                                </div>
+                            </button>
+
+                            <div x-show="expandedModules.includes(module.id)" x-collapse
+                                class="border-t border-[#EDEBE9] bg-[#FDFDFD]">
+                                <template x-for="(lesson, lIndex) in module.lessons" :key="lesson.id">
+                                    <a :href="`../lesson/view.html?id=${lesson.id}`"
+                                        class="flex items-center gap-4 p-4 pl-[4.5rem] hover:bg-[#F3F2F1] border-b border-[#EDEBE9] last:border-0 transition-colors group relative">
+                                        <!-- Connector Line (Optional Visual) -->
+                                        <div
+                                            class="absolute left-[2.75rem] top-0 bottom-0 w-px bg-gray-200 group-last:bottom-1/2">
+                                        </div>
+                                        <div
+                                            class="absolute left-[2.5rem] top-1/2 -translate-y-1/2 w-4 h-[2px] bg-gray-200">
+                                        </div>
+
+                                        <div class="flex-1">
+                                            <div
+                                                class="text-body font-semibold text-[#323130] group-hover:text-[#0078D4] transition-colors flex items-center gap-2">
+                                                <ion-icon name="document-text-outline"
+                                                    class="text-gray-400 group-hover:text-[#0078D4]"></ion-icon>
+                                                <span x-text="lesson.title"></span>
+                                            </div>
+                                        </div>
+                                        <div class="pr-4">
+                                            <ion-icon name="play-circle"
+                                                class="text-2xl text-[#EDEBE9] group-hover:text-[#0078D4] transition-colors"></ion-icon>
+                                        </div>
+                                    </a>
+                                </template>
+                                <div x-show="!module.lessons || module.lessons.length === 0"
+                                    class="p-6 pl-[4.5rem] text-caption text-[#8A8886] italic">
+                                    Tidak ada pelajaran dalam modul ini.
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+
+                    <div x-show="!loading && modules.length === 0"
+                        class="text-center py-16 bg-white rounded-xl border border-dashed border-[#EDEBE9]">
+                        <div
+                            class="w-16 h-16 bg-[#F3F2F1] rounded-full flex items-center justify-center mx-auto mb-4 text-[#8A8886]">
+                            <ion-icon name="library-outline" class="text-3xl"></ion-icon>
+                        </div>
+                        <h3 class="text-body-large font-bold text-[#323130]">Materi Belum Tersedia</h3>
+                        <p class="text-caption text-[#605E5C] mt-2">Instruktur sedang menyiapkan materi untuk kursus
+                            ini.</p>
+                    </div>
+                </div>
+
+                <!-- Tab 2: Tugas -->
+                <div x-show="activeTab === 'tugas'" class="animate-slide-up space-y-6" x-cloak>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <template x-for="assign in assignments" :key="assign.id">
+                            <a :href="`../assignment/view.html?id=${assign.id}`"
+                                class="card-fluent card-fluent-interactive p-6 flex flex-col h-full border border-[#EDEBE9] hover:border-[#0078D4] group">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div
+                                        class="w-12 h-12 rounded-lg bg-red-50 text-[#D13438] flex items-center justify-center shadow-sm group-hover:bg-[#D13438] group-hover:text-white transition-colors duration-300">
+                                        <ion-icon name="clipboard-outline" class="text-xl"></ion-icon>
+                                    </div>
+                                    <div
+                                        class="px-2 py-1 bg-[#F3F2F1] rounded text-[10px] font-bold text-[#605E5C] uppercase tracking-wide">
+                                        Assignment
+                                    </div>
+                                </div>
+
+                                <h3 class="text-body-large font-bold text-[#323130] mb-2 line-clamp-2 bg-gradient-to-r from-[#323130] to-[#323130] bg-[length:0%_2px] bg-no-repeat bg-left-bottom group-hover:bg-[length:100%_2px] transition-all duration-300 pb-1"
+                                    x-text="assign.title"></h3>
+
+                                <p class="text-caption text-[#605E5C] line-clamp-2 mb-6 flex-1"
+                                    x-text="assign.description || 'Tidak ada deskripsi'"></p>
+
+                                <div class="pt-4 mt-auto border-t border-[#EDEBE9] flex items-center justify-between">
+                                    <div class="text-caption font-semibold text-[#D13438] flex items-center gap-1">
+                                        <ion-icon name="time-outline"></ion-icon>
+                                        <span x-text="formatDate(assign.due_date)"></span>
+                                    </div>
+                                    <div
+                                        class="text-[#0078D4] text-xl transform group-hover:translate-x-1 transition-transform">
+                                        <ion-icon name="arrow-forward-circle"></ion-icon>
+                                    </div>
+                                </div>
+                            </a>
+                        </template>
+                    </div>
+
+                    <div x-show="!loading && assignments.length === 0"
+                        class="text-center py-16 bg-white rounded-xl border border-dashed border-[#EDEBE9]">
+                        <div
+                            class="w-16 h-16 bg-[#F3F2F1] rounded-full flex items-center justify-center mx-auto mb-4 text-[#8A8886]">
+                            <ion-icon name="checkbox-outline" class="text-3xl"></ion-icon>
+                        </div>
+                        <h3 class="text-body-large font-bold text-[#323130]">Tidak Ada Tugas</h3>
+                        <p class="text-caption text-[#605E5C] mt-2">Belum ada tugas atau kuis yang diberikan saat ini.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/components/sidebar.js"></script>
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('courseView', () => ({
+                course: null,
+                modules: [],
+                assignments: [],
+                instructor: null,
+                isEnrolled: false,
+                session: null,
+                userRole: 'student',
+                expandedModules: [],
+                activeTab: 'materi',
+                loading: true,
+
+                async init() {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const courseId = urlParams.get('id');
+
+                    if (!courseId) {
+                        window.location.href = 'catalog.html';
+                        return;
+                    }
+
+                    const { data: { session } } = await supabase.auth.getSession();
+                    this.session = session;
+
+                    if (session) {
+                        const { data: profile } = await supabase.from('profiles').select('role').eq('id', session.user.id).single();
+                        if (profile) this.userRole = profile.role;
+                        await this.checkEnrollment(courseId);
+                    }
+
+                    await this.fetchCourseData(courseId);
+
+                    // Auto-expand first module
+                    if (this.modules.length > 0) {
+                        this.expandedModules.push(this.modules[0].id);
+                    }
+
+                    // Check URL hash for tab
+                    if (window.location.hash === '#tugas') {
+                        this.activeTab = 'tugas';
+                    }
+
+                    this.loading = false;
+                },
+
+                async fetchCourseData(courseId) {
+                    // 1. Fetch Course
+                    const { data: course } = await supabase.from('courses').select('*').eq('id', courseId).single();
+                    this.course = course;
+
+                    if (course) {
+                        // 2. Fetch Instructor
+                        const { data: profile } = await supabase.from('profiles').select('full_name').eq('id', course.instructor_id).single();
+                        this.instructor = profile;
+                    }
+
+                    // 3. Fetch Modules & Lessons
+                    const { data: modules } = await supabase
+                        .from('modules')
+                        .select('*, lessons(*)')
+                        .eq('course_id', courseId)
+                        .order('created_at', { ascending: true });
+
+                    if (modules) {
+                        this.modules = modules.map(m => ({
+                            ...m,
+                            lessons: m.lessons?.sort((a, b) => new Date(a.created_at) - new Date(b.created_at)) || []
+                        }));
+                    }
+
+                    // 4. Fetch Assignments
+                    const { data: assignments } = await supabase
+                        .from('assignments')
+                        .select('*')
+                        .eq('course_id', courseId)
+                        .order('due_date', { ascending: true });
+
+                    if (assignments) {
+                        this.assignments = assignments;
+                    }
+                },
+
+                async checkEnrollment(courseId) {
+                    const { data } = await supabase.from('enrollments').select('id').eq('user_id', this.session.user.id).eq('course_id', courseId).single();
+                    if (data) this.isEnrolled = true;
+                },
+
+                toggleModule(moduleId) {
+                    const index = this.expandedModules.indexOf(moduleId);
+                    if (index > -1) {
+                        this.expandedModules.splice(index, 1);
+                    } else {
+                        this.expandedModules.push(moduleId);
+                    }
+                },
+
+                continueLesson() {
+                    // Logic to find first uncompleted lesson (mocked to first lesson for now)
+                    if (this.modules.length > 0 && this.modules[0].lessons?.length > 0) {
+                        window.location.href = `../lesson/view.html?id=${this.modules[0].lessons[0].id}`;
+                    } else {
+                        alert('Belum ada pelajaran yang tersedia.');
+                    }
+                },
+
+                async enrollInCourse() {
+                    if (!this.session) {
+                        window.location.href = '../auth/login.html';
+                        return;
+                    }
+
+                    try {
+                        const { error } = await supabase.from('enrollments').insert({
+                            user_id: this.session.user.id,
+                            course_id: this.course.id
+                        });
+
+                        if (error) throw error;
+
+                        this.isEnrolled = true;
+                        // Optional success notification
+                    } catch (error) {
+                        console.error('Enroll error:', error);
+                        alert('Gagal mendaftar: ' + error.message);
+                    }
+                },
+
+                formatDate(dateString) {
+                    if (!dateString) return 'Tanpa Tenggat';
+                    const options = { day: 'numeric', month: 'short', year: 'numeric' };
+                    return new Date(dateString).toLocaleDateString('id-ID', options);
+                }
+            })
+            );
+        });
+    </script>
+</body>
+
+</html>

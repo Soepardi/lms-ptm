@@ -1,0 +1,9 @@
+# User requested ignores
+.agent/
+.vscode/
+openspec/
+*.txt
+
+# System files
+.DS_Store
+Thumbs.db

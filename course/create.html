@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buat Kursus Baru - Pesantren Teknologi Majapahit</title>
+    <link rel="icon" type="image/x-icon" href="../assets/images/favicon.ico">
+
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.1.0/dist/full.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/utils/supabase-client.js"></script>
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="stylesheet" href="../assets/css/sidebar.css">
+</head>
+
+<body class="bg-[#F3F2F1] text-[#323130]" x-data="createCourse" data-active-page="create-course">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar Component (dynamically loaded) -->
+        <div id="app-sidebar"></div>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto">
+            <div class="max-w-4xl mx-auto px-6 py-8">
+                <div class="card-fluent p-8 animate-slide-up">
+                    <div class="mb-8">
+                        <a href="../dashboard/instructor/index.html"
+                            class="inline-flex items-center gap-1 text-[#0078D4] text-body font-semibold mb-3 hover:underline">
+                            <ion-icon name="arrow-back"></ion-icon> Kembali ke Dashboard
+                        </a>
+                        <h2 class="text-title mb-2">Buat Kursus Baru</h2>
+                        <p class="text-body text-[#605E5C]">Mulai dengan memberikan judul dan deskripsi untuk kursus
+                            Anda.</p>
+                    </div>
+
+                    <form @submit.prevent="handleCreateCourse" class="space-y-6">
+                        <!-- Title Input -->
+                        <div class="space-y-2">
+                            <label class="block text-body font-semibold text-[#323130]">Judul Kursus</label>
+                            <input type="text" x-model="title" placeholder="Contoh: Pemrograman Web Lanjut"
+                                class="input-fluent w-full text-body-large" required />
+                        </div>
+
+                        <!-- Description Input -->
+                        <div class="space-y-2">
+                            <label class="block text-body font-semibold text-[#323130]">Deskripsi</label>
+                            <textarea x-model="description" placeholder="Jelaskan apa yang akan dipelajari siswa..."
+                                class="input-fluent w-full h-32 resize-none" required></textarea>
+                        </div>
+
+                        <!-- Thumbnail Input -->
+                        <div class="space-y-2">
+                            <label class="block text-body font-semibold text-[#323130]">Thumbnail Kursus</label>
+
+                            <div class="border-2 border-dashed border-[#EDEBE9] rounded-xl p-8 text-center hover:border-[#0078D4] hover:bg-[#F3F2F1] transition-all cursor-pointer group"
+                                @click="$refs.fileInput.click()"
+                                :class="thumbnailFile ? 'border-solid border-[#0078D4] bg-[#F3F2F1]' : ''">
+
+                                <input x-ref="fileInput" type="file" @change="handleFileChange" class="hidden"
+                                    accept="image/*" />
+
+                                <div x-show="!thumbnailPreview">
+                                    <div
+                                        class="w-12 h-12 bg-white rounded-full mx-auto flex items-center justify-center shadow-sm text-[#0078D4] text-2xl mb-3 group-hover:scale-110 transition-transform">
+                                        <ion-icon name="image-outline"></ion-icon>
+                                    </div>
+                                    <p class="text-body font-semibold text-[#0078D4]">Klik untuk upload gambar</p>
+                                    <p class="text-caption text-[#8A8886] mt-1">Rekomendasi: 1280x720px (JPG, PNG)</p>
+                                </div>
+
+                                <div x-show="thumbnailPreview" class="relative">
+                                    <img :src="thumbnailPreview"
+                                        class="max-h-64 mx-auto rounded-lg shadow-md object-cover" />
+                                    <button type="button" @click.stop="removeFile"
+                                        class="absolute -top-3 -right-3 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-red-600 transition-colors">
+                                        <ion-icon name="close"></ion-icon>
+                                    </button>
+                                    <p class="mt-2 text-caption font-semibold text-[#323130]"
+                                        x-text="thumbnailFile?.name"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="h-px bg-[#EDEBE9] my-6"></div>
+
+                        <!-- Actions -->
+                        <div class="flex items-center justify-end gap-3">
+                            <a href="../dashboard/instructor/index.html" class="btn-fluent btn-secondary-fluent">
+                                Batal
+                            </a>
+                            <button type="submit" class="btn-fluent btn-primary-fluent min-w-[120px]"
+                                :disabled="loading">
+                                <span x-show="!loading">Buat Kursus</span>
+                                <span x-show="loading" class="flex items-center gap-2">
+                                    <span class="loading loading-spinner loading-xs"></span>
+                                    Memproses...
+                                </span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Load Unified Sidebar -->
+    <script src="../assets/js/components/sidebar.js"></script>
+
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('createCourse', () => ({
+                title: '',
+                description: '',
+                thumbnailFile: null,
+                thumbnailPreview: null,
+                loading: false,
+
+                handleFileChange(event) {
+                    const file = event.target.files[0];
+                    if (file) {
+                        this.thumbnailFile = file;
+                        this.thumbnailPreview = URL.createObjectURL(file);
+                    }
+                },
+
+                removeFile() {
+                    this.thumbnailFile = null;
+                    if (this.thumbnailPreview) {
+                        URL.revokeObjectURL(this.thumbnailPreview);
+                        this.thumbnailPreview = null;
+                    }
+                    this.$refs.fileInput.value = '';
+                },
+
+                async handleCreateCourse() {
+                    this.loading = true;
+                    try {
+                        const { data: { session } } = await supabase.auth.getSession();
+                        if (!session) throw new Error('Sesi kadaluarsa, silakan login kembali.');
+
+                        let thumbnailUrl = null;
+
+                        // Upload Thumbnail if exists
+                        if (this.thumbnailFile) {
+                            const fileExt = this.thumbnailFile.name.split('.').pop();
+                            const fileName = `${Date.now()}.${fileExt}`;
+                            const filePath = `${session.user.id}/${fileName}`;
+
+                            const { error: uploadError } = await supabase.storage
+                                .from('course-thumbnails')
+                                .upload(filePath, this.thumbnailFile);
+
+                            if (uploadError) throw uploadError;
+
+                            const { data: { publicUrl } } = supabase.storage
+                                .from('course-thumbnails')
+                                .getPublicUrl(filePath);
+
+                            thumbnailUrl = publicUrl;
+                        }
+
+                        // Insert Course
+                        const { data, error } = await supabase
+                            .from('courses')
+                            .insert([
+                                {
+                                    title: this.title,
+                                    description: this.description,
+                                    instructor_id: session.user.id,
+                                    thumbnail_url: thumbnailUrl,
+                                    published: false
+                                }
+                            ])
+                            .select();
+
+                        if (error) throw error;
+
+                        // Redirect to Edit page
+                        window.location.href = `edit.html?id=${data[0].id}`;
+
+                    } catch (error) {
+                        alert('Gagal membuat kursus: ' + error.message);
+                    } finally {
+                        this.loading = false;
+                    }
+                }
+            }))
+        })
+    </script>
+</body>
+
+</html>

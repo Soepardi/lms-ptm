@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin - Pesantren Teknologi Majapahit</title>
+    <link rel="icon" type="image/x-icon" href="../../assets/images/favicon.ico">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.1.0/dist/full.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../../assets/js/utils/supabase-client.js"></script>
+    <link rel="stylesheet" href="../../assets/css/styles.css">
+</head>
+
+<body class="bg-[#F3F2F1] text-[#323130]" x-data="studentDashboard">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="w-[260px] bg-[#FAF9F8] border-r border-[#EDEBE9] flex flex-col pt-6 pb-4 shrink-0">
+            <div class="px-6 mb-8">
+                <h2 class="text-body-large font-semibold text-[#323130]">EduPlatform</h2>
+            </div>
+            <div class="flex-1 overflow-y-auto px-3 space-y-1">
+                <div class="px-3 mb-2 text-caption font-semibold text-[#8A8886] uppercase tracking-wide">Learn</div>
+                <a href="#" class="sidebar-link active">
+                    <ion-icon name="home-outline"></ion-icon> Home
+                </a>
+                <a href="../../course/catalog.html" class="sidebar-link">
+                    <ion-icon name="compass-outline"></ion-icon> Discover
+                </a>
+                <a href="#" class="sidebar-link">
+                    <ion-icon name="albums-outline"></ion-icon> My Learning
+                </a>
+                <div class="px-3 mt-6 mb-2 text-caption font-semibold text-[#8A8886] uppercase tracking-wide">Progress
+                </div>
+                <a href="#" class="sidebar-link">
+                    <ion-icon name="time-outline"></ion-icon> Recent
+                </a>
+                <a href="#" class="sidebar-link">
+                    <ion-icon name="bookmark-outline"></ion-icon> Bookmarks
+                </a>
+            </div>
+            <div class="px-3 pt-4 border-t border-[#EDEBE9]">
+                <div class="flex items-center gap-3 p-2 rounded-md hover:bg-[#F3F2F1] cursor-pointer" @click="logout">
+                    <div
+                        class="w-8 h-8 rounded-full bg-[#0078D4] flex items-center justify-center text-white text-xs font-bold">
+                        <span x-text="profile?.full_name?.charAt(0) || 'U'"></span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-caption font-semibold truncate" x-text="profile?.full_name || 'User'"></div>
+                        <div class="text-caption text-[#8A8886]">Account</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto">
+            <!-- Header -->
+            <div class="border-b border-[#EDEBE9]">
+                <div class="max-w-6xl mx-auto px-10 py-10">
+                    <p class="text-caption text-[#8A8886] uppercase tracking-wide font-semibold mb-2"
+                        x-text="new Date().toLocaleDateString('en-US', {weekday: 'long', month: 'long', day: 'numeric'})">
+                    </p>
+                    <h1 class="text-title">Welcome back</h1>
+                </div>
+            </div>
+
+            <div class="max-w-6xl mx-auto px-10 py-12 space-y-12">
+                <!-- Continue Learning -->
+                <section x-show="enrollments.length > 0">
+                    <h2 class="text-subtitle mb-6">Continue Learning</h2>
+                    <div class="card-fluent relative h-[340px] overflow-hidden bg-gradient-to-br from-[#323130] to-[#484644] cursor-pointer group"
+                        x-show="enrollments[0]"
+                        @click="window.location.href = `../../course/view.html?id=${enrollments[0]?.course?.id}`">
+                        <div class="relative h-full flex flex-col justify-end p-10">
+                            <div class="max-w-2xl">
+                                <div
+                                    class="inline-block px-3 py-1 rounded-md bg-white/10 backdrop-blur-md text-white text-caption font-bold uppercase tracking-wide mb-3">
+                                    In Progress
+                                </div>
+                                <h3 class="text-white text-[32px] font-semibold leading-tight mb-3"
+                                    x-text="enrollments[0]?.course?.title"></h3>
+                                <p class="text-white/80 text-body leading-relaxed mb-5 line-clamp-2"
+                                    x-text="enrollments[0]?.course?.description"></p>
+                                <div class="flex items-center gap-4 max-w-md mb-4">
+                                    <div class="flex-1 h-1.5 bg-white/20 rounded-full overflow-hidden">
+                                        <div class="h-full bg-white rounded-full" style="width: 35%"></div>
+                                    </div>
+                                    <span class="text-white text-caption font-semibold">35%</span>
+                                </div>
+                                <button
+                                    class="btn-fluent bg-white text-[#323130] hover:bg-white/90 px-6 py-3 font-semibold group-hover:scale-105">
+                                    Continue
+                                    <ion-icon name="arrow-forward"></ion-icon>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- My Courses -->
+                <section>
+                    <div class="flex items-end justify-between mb-6">
+                        <div>
+                            <h2 class="text-subtitle mb-1">My Courses</h2>
+                            <p class="text-body text-[#605E5C]"
+                                x-text="`${enrollments.length} ${enrollments.length === 1 ? 'course' : 'courses'} enrolled`">
+                            </p>
+                        </div>
+                        <a href="../../course/catalog.html"
+                            class="text-[#0078D4] text-body font-semibold hover:underline">
+                            Discover More
+                        </a>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <template x-for="enrollment in enrollments" :key="enrollment.id">
+                            <a :href="`../../course/view.html?id=${enrollment.course.id}`"
+                                class="card-fluent card-fluent-interactive p-6">
+                                <div
+                                    class="w-12 h-12 rounded-lg bg-gradient-to-br from-[#0078D4] to-[#50E6FF] flex items-center justify-center text-white text-lg font-bold shadow mb-5">
+                                    <span x-text="enrollment.course.title.charAt(0)"></span>
+                                </div>
+                                <div class="mb-5">
+                                    <h3 class="text-body-large font-semibold text-[#323130] mb-2"
+                                        x-text="enrollment.course.title"></h3>
+                                    <p class="text-body text-[#605E5C] line-clamp-2"
+                                        x-text="enrollment.course.description"></p>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between items-center text-caption">
+                                        <span class="text-[#8A8886]">Progress</span>
+                                        <span class="font-semibold text-[#323130]">35%</span>
+                                    </div>
+                                    <div class="h-1.5 bg-[#EDEBE9] rounded-full overflow-hidden">
+                                        <div class="h-full bg-[#0078D4] rounded-full" style="width: 35%"></div>
+                                    </div>
+                                </div>
+                            </a>
+                        </template>
+
+                        <!-- Empty State -->
+                        <div x-show="enrollments.length === 0" class="col-span-full py-16 text-center">
+                            <div
+                                class="w-16 h-16 rounded-full bg-[#EDEBE9] flex items-center justify-center mx-auto mb-4">
+                                <ion-icon name="school-outline" class="text-3xl text-[#8A8886]"></ion-icon>
+                            </div>
+                            <h3 class="text-body-large font-semibold text-[#323130] mb-2">Start Your Learning Journey
+                            </h3>
+                            <p class="text-body text-[#605E5C] mb-6">Explore our course catalog to begin</p>
+                            <a href="../../course/catalog.html"
+                                class="btn-fluent btn-primary-fluent inline-flex items-center gap-2 px-6 py-3">
+                                Discover Courses
+                                <ion-icon name="arrow-forward"></ion-icon>
+                            </a>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('studentDashboard', () => ({
+                profile: null,
+                enrollments: [],
+
+                async init() {
+                    const { data: { session } } = await supabase.auth.getSession();
+                    if (!session) {
+                        window.location.href = '../../auth/login.html';
+                        return;
+                    }
+
+                    const { data: profile } = await supabase.from('profiles').select('*').eq('id', session.user.id).single();
+                    this.profile = profile;
+
+                    const { data: enrollments } = await supabase.from('enrollments').select('*, course:courses(*)').eq('user_id', session.user.id);
+                    if (enrollments) this.enrollments = enrollments;
+                },
+
+                async logout() {
+                    await supabase.auth.signOut();
+                    window.location.href = '../../index.html';
+                }
+            }))
+        })
+    </script>
+</body>
+
+</html>
