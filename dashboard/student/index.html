@@ -9,7 +9,7 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@3.1.0/dist/full.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../../assets/js/utils/supabase-client.js"></script>
     <link rel="stylesheet" href="../../assets/css/styles.css">
@@ -18,12 +18,11 @@
 
 <body class="bg-[#F3F2F1] text-[#323130]" x-data="studentDashboard" data-active-page="home">
     <div class="flex h-screen overflow-hidden">
-        <!-- Sidebar Component (dynamically loaded) -->
+
         <div id="app-sidebar"></div>
 
-        <!-- Main Content -->
         <main class="flex-1 overflow-y-auto">
-            <!-- Header with Date -->
+
             <div class="border-b border-[#EDEBE9] bg-white sticky top-0 z-10 backdrop-blur-md bg-white/90">
                 <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
                     <div>
@@ -39,10 +38,8 @@
             <div class="max-w-7xl mx-auto px-6 py-8">
                 <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
 
-                    <!-- LEFT COLUMN (Main Activity) -->
                     <div class="lg:col-span-3 space-y-8">
 
-                        <!-- Hero: Continue Learning -->
                         <div x-show="lastActiveCourse" class="animate-slide-up">
                             <div class="card-fluent relative overflow-hidden bg-gradient-to-r from-[#0078D4] to-[#005a9e] text-white p-0 shadow-lg group cursor-pointer"
                                 @click="window.location.href = `../../course/view.html?id=${lastActiveCourse?.course?.id}`">
@@ -66,7 +63,7 @@
                                     <div class="flex items-end gap-6">
                                         <div class="flex-1 max-w-md">
                                             <div class="flex justify-between text-sm mb-2 font-medium">
-                                                <span>Progres Kursus</span>
+                                                <span>Progres Kelas</span>
                                                 <span x-text="(lastActiveCourse?.progress_pct || 0) + '%'"></span>
                                             </div>
                                             <div class="h-2 bg-black/20 rounded-full overflow-hidden backdrop-blur-sm">
@@ -84,12 +81,11 @@
                             </div>
                         </div>
 
-                        <!-- All Courses Grid -->
                         <section>
                             <div class="flex items-center justify-between mb-6">
-                                <h2 class="text-subtitle font-semibold">Kursus Saya</h2>
+                                <h2 class="text-subtitle font-semibold">Kelas Saya</h2>
                                 <a href="../../course/catalog.html"
-                                    class="text-[#0078D4] hover:underline text-body font-medium">Cari Kursus Baru</a>
+                                    class="text-[#0078D4] hover:underline text-body font-medium">Cari Kelas Baru</a>
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -124,26 +120,23 @@
                                 </template>
                             </div>
 
-                            <!-- Empty State -->
                             <div x-show="enrollments.length === 0"
                                 class="card-fluent p-12 text-center animate-slide-up">
                                 <div
                                     class="w-20 h-20 bg-[#F3F2F1] rounded-full flex items-center justify-center mx-auto mb-4 text-[#8A8886]">
                                     <ion-icon name="rocket-outline" class="text-4xl"></ion-icon>
                                 </div>
-                                <h3 class="text-body-large font-bold text-[#323130] mb-2">Belum ada kursus aktif</h3>
+                                <h3 class="text-body-large font-bold text-[#323130] mb-2">Belum ada Kelas aktif</h3>
                                 <p class="text-body text-[#605E5C] mb-6">Mulai perjalanan belajar Anda dengan mendaftar
-                                    di kursus pertama.</p>
+                                    di Kelas pertama.</p>
                                 <a href="../../course/catalog.html" class="btn-fluent btn-primary-fluent">Jelajahi
-                                    Kursus</a>
+                                    Kelas</a>
                             </div>
                         </section>
                     </div>
 
-                    <!-- RIGHT COLUMN (Productivity Sidebar) -->
                     <div class="lg:col-span-1 space-y-6">
 
-                        <!-- Upcoming Deadlines -->
                         <div class="card-fluent p-6 animate-slide-up" style="animation-delay: 0.1s">
                             <h3 class="text-body-large font-semibold mb-4 flex items-center gap-2">
                                 <ion-icon name="calendar-outline" class="text-[#0078D4]"></ion-icon>
@@ -169,7 +162,6 @@
                             </div>
                         </div>
 
-                        <!-- Recent Feedback / Announcements could go here -->
                         <div class="card-fluent p-6 animate-slide-up" style="animation-delay: 0.2s">
                             <h3 class="text-body-large font-semibold mb-4 flex items-center gap-2">
                                 <ion-icon name="notifications-outline" class="text-[#0078D4]"></ion-icon>
@@ -187,7 +179,6 @@
         </main>
     </div>
 
-    <!-- Scripts -->
     <script src="../../assets/js/components/sidebar.js"></script>
     <script>
         document.addEventListener('alpine:init', () => {
@@ -214,13 +205,15 @@
                     // 2. Fetch Enrollments with Course Details
                     const { data: enrollments } = await supabase
                         .from('enrollments')
-                        .select('*, course:courses(*)')
+                        .select('*, courses(*)')
                         .eq('user_id', session.user.id);
 
                     if (enrollments) {
-                        this.enrollments = enrollments;
-                        // Determine last active course (logic: highest progress or defaulting to first)
-                        // In a real app, track 'last_accessed_at'
+                        this.enrollments = enrollments.map(e => ({
+                            ...e,
+                            course: e.courses // Map 'courses' to 'course' for template compatibility
+                        }));
+                        // Determine last active course
                         if (this.enrollments.length > 0) {
                             this.lastActiveCourse = this.enrollments[0];
                         }
@@ -231,14 +224,12 @@
                 },
 
                 async fetchUpcomingAssignments(userId) {
-                    // Get course IDs enrolled by user
+                    // Get Course IDs enrolled by user
                     const courseIds = this.enrollments.map(e => e.course_id);
 
                     if (courseIds.length === 0) return;
 
-                    // Fetch assignments for these courses that are active and not submitted by user (simplified for now)
-                    // Note: Supabase query optimization would require a 'not in' submissions check, 
-                    // for simplicity we fetch upcoming assignments for enrolled courses.
+                    // Fetch assignments for these courses
                     const { data: assignments } = await supabase
                         .from('assignments')
                         .select('*, courses(title)')

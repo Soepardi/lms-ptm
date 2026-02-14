@@ -4,12 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Course Catalog - Pesantren Teknologi Majapahit</title>
+    <title>Katalog Kelas - Pesantren Teknologi Majapahit</title>
     <link rel="icon" type="image/x-icon" href="../assets/images/favicon.ico">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@3.1.0/dist/full.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../assets/js/utils/supabase-client.js"></script>
     <link rel="stylesheet" href="../assets/css/styles.css">
@@ -18,17 +18,16 @@
 
 <body class="bg-[#F3F2F1] text-[#323130]" x-data="catalogApp" data-active-page="catalog">
     <div class="flex h-screen overflow-hidden">
-        <!-- Sidebar Component (dynamically loaded) -->
+
         <div id="app-sidebar"></div>
 
-        <!-- Main Content -->
         <main class="flex-1 overflow-y-auto">
-            <!-- Header & Search -->
+
             <div class="bg-white border-b border-[#EDEBE9] sticky top-0 z-10">
                 <div class="max-w-7xl mx-auto px-6 py-6">
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div>
-                            <h1 class="text-title font-semibold mb-1">Jelajahi Kursus</h1>
+                            <h1 class="text-title font-semibold mb-1">Jelajahi Kelas</h1>
                             <p class="text-body text-[#605E5C]">Temukan ilmu baru untuk masa depan Anda</p>
                         </div>
 
@@ -36,7 +35,7 @@
                             <ion-icon name="search-outline"
                                 class="absolute left-3 top-1/2 -translate-y-1/2 text-[#8A8886] text-lg"></ion-icon>
                             <input type="text" x-model="searchQuery" @input.debounce="filterCourses"
-                                placeholder="Cari judul kursus atau materi..."
+                                placeholder="Cari judul Kelas atau materi..."
                                 class="input-fluent pl-10 w-full bg-[#F3F2F1] border-transparent hover:bg-white hover:border-[#EDEBE9] focus:bg-white focus:border-[#0078D4] transition-all">
                         </div>
                     </div>
@@ -45,21 +44,20 @@
 
             <div class="max-w-7xl mx-auto px-6 py-8 space-y-12">
 
-                <!-- Featured Course (Only show if no search query) -->
                 <section x-show="!searchQuery && featuredCourse" class="animate-slide-up">
                     <div class="card-fluent relative overflow-hidden bg-[#323130] text-white p-0 group cursor-pointer"
                         @click="viewCourse(featuredCourse?.id)">
-                        <!-- Background Image / Gradient -->
+
                         <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent z-10">
                         </div>
                         <img :src="featuredCourse?.thumbnail_url || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1280&h=720&fit=crop'"
                             class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700"
-                            alt="Featured Course">
+                            alt="Featured Kelas">
 
                         <div class="relative z-20 p-8 md:p-12 max-w-2xl">
                             <div
                                 class="inline-block px-3 py-1 rounded bg-[#0078D4] text-white text-caption font-bold uppercase tracking-wide mb-4">
-                                Kursus Unggulan
+                                Kelas Unggulan
                             </div>
                             <h2 class="text-4xl font-bold mb-4 leading-tight" x-text="featuredCourse?.title"></h2>
                             <p class="text-white/90 text-body-large mb-8 line-clamp-2"
@@ -74,12 +72,11 @@
                     </div>
                 </section>
 
-                <!-- Course Grid -->
                 <section>
                     <div class="flex items-end justify-between mb-6">
                         <h2 class="text-subtitle font-semibold"
                             x-text="searchQuery ? 'Hasil Pencarian' : 'Semua Kursus'"></h2>
-                        <div class="text-body text-[#605E5C]" x-text="filteredCourses.length + ' kursus ditemukan'">
+                        <div class="text-body text-[#605E5C]" x-text="filteredCourses.length + ' Kelas ditemukan'">
                         </div>
                     </div>
 
@@ -88,11 +85,10 @@
                             <div class="card-fluent card-fluent-interactive p-0 flex flex-col h-full overflow-hidden animate-slide-up cursor-pointer group"
                                 @click="viewCourse(course.id)">
 
-                                <!-- Thumbnail -->
                                 <div class="relative aspect-video bg-gray-200 overflow-hidden">
                                     <img :src="course.thumbnail_url || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=640&h=360&fit=crop'"
                                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                        alt="Course Thumbnail">
+                                        alt="Kelas Thumbnail">
                                     <div x-show="isEnrolled(course.id)"
                                         class="absolute top-3 right-3 bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded shadow-sm">
                                         TERDAFTAR
@@ -103,7 +99,6 @@
                                     <h3 class="text-body-large font-bold text-[#323130] mb-2 line-clamp-2 group-hover:text-[#0078D4] transition-colors"
                                         x-text="course.title"></h3>
 
-                                    <!-- Instructor -->
                                     <div class="flex items-center gap-2 mb-3">
                                         <div
                                             class="w-6 h-6 rounded-full bg-[#EDEBE9] flex items-center justify-center text-xs font-bold text-[#605E5C]">
@@ -123,7 +118,6 @@
                                             <span x-text="(course.enrollments_count || 0) + ' Siswa'"></span>
                                         </div>
 
-                                        <!-- Actions -->
                                         <div class="flex items-center gap-2">
                                             <button x-show="!isEnrolled(course.id)"
                                                 @click.stop="enrollInCourse(course.id)"
@@ -141,21 +135,19 @@
                         </template>
                     </div>
 
-                    <!-- Empty State -->
                     <div x-show="!loading && filteredCourses.length === 0" class="text-center py-16">
                         <div
                             class="w-16 h-16 bg-[#F3F2F1] rounded-full flex items-center justify-center mx-auto mb-4 text-[#8A8886]">
                             <ion-icon name="search" class="text-3xl"></ion-icon>
                         </div>
-                        <h3 class="text-body-large font-semibold text-[#323130]">Tidak ada kursus yang ditemukan</h3>
+                        <h3 class="text-body-large font-semibold text-[#323130]">Tidak ada Kelas yang ditemukan</h3>
                         <p class="text-body text-[#605E5C] mt-1">Coba kata kunci lain atau hapus filter pencarian Anda.
                         </p>
                         <button @click="searchQuery = ''; filterCourses()" class="btn-fluent btn-secondary-fluent mt-4">
-                            Lihat Semua Kursus
+                            Lihat Semua Kelas
                         </button>
                     </div>
 
-                    <!-- Loading State -->
                     <div x-show="loading" class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <template x-for="i in 3">
                             <div class="card-fluent p-0 h-80 animate-pulse">
@@ -174,7 +166,6 @@
         </main>
     </div>
 
-    <!-- Script -->
     <script src="../assets/js/components/sidebar.js"></script>
     <script>
         document.addEventListener('alpine:init', () => {
@@ -204,8 +195,8 @@
                 },
 
                 async fetchCourses() {
-                    // Fetch courses with instructor profile and count of enrollments (if possible, strictly speaking Count is separate)
-                    // Simplified: Fetch courses and Profiles
+                    // Fetch Courses with instructor profile and count of enrollments (if possible, strictly speaking Count is separate)
+                    // Simplified: Fetch Courses and Profiles
                     const { data: courses, error } = await supabase
                         .from('courses')
                         .select('*, profiles(full_name)')
@@ -216,7 +207,7 @@
                         this.courses = courses;
                         this.filteredCourses = courses;
 
-                        // Pick a featured course (random or first)
+                        // Pick a featured Course (random or first)
                         if (courses.length > 0) {
                             this.featuredCourse = courses[0];
                         }
@@ -260,7 +251,7 @@
                         this.enrolledCourseIds.push(courseId);
 
                         // Optional: Show success feedback (Toast or Alert)
-                        // alert('Berhasil mendaftar kursus!');
+                        // alert('Berhasil menDaftar Kelas!');
 
                     } catch (error) {
                         console.error('Error enrolling:', error);

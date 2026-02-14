@@ -7,27 +7,22 @@
     <title>Daftar Akun Baru - Pesantren Teknologi Majapahit</title>
     <link rel="icon" type="image/x-icon" href="../assets/images/favicon.ico">
 
-    <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
-    <!-- Tailwind CSS & DaisyUI -->
     <link href="https://cdn.jsdelivr.net/npm/daisyui@3.1.0/dist/full.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
 
-    <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../assets/js/utils/supabase-client.js"></script>
 
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="../assets/css/styles.css">
 </head>
 
 <body class="min-h-screen bg-white flex">
 
-    <!-- Left Column: Visual (Hidden on Mobile) -->
     <div class="hidden lg:flex w-1/2 bg-[#F3F2F1] relative items-center justify-center overflow-hidden">
-        <!-- Modern Abstract Background -->
+
         <div
             class="absolute w-[800px] h-[800px] bg-gradient-to-tr from-[#0078D4]/20 to-[#50E6FF]/20 rounded-full blur-3xl bottom-[10%] -left-[20%] animate-pulse">
         </div>
@@ -74,7 +69,6 @@
         </div>
     </div>
 
-    <!-- Right Column: Form -->
     <div
         class="w-full lg:w-1/2 flex flex-col justify-center items-center p-8 md:p-12 relative animate-fade-in overflow-y-auto max-h-screen">
         <a href="../index.html"
@@ -216,7 +210,6 @@
                                 }
                             }
                         });
-
 
                         if (error) throw error;
 

@@ -4,13 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buat Kursus Baru - Pesantren Teknologi Majapahit</title>
+    <title>Buat Kelas Baru - Pesantren Teknologi Majapahit</title>
     <link rel="icon" type="image/x-icon" href="../assets/images/favicon.ico">
 
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@3.1.0/dist/full.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../assets/js/utils/supabase-client.js"></script>
     <link rel="stylesheet" href="../assets/css/styles.css">
@@ -19,10 +19,9 @@
 
 <body class="bg-[#F3F2F1] text-[#323130]" x-data="createCourse" data-active-page="create-course">
     <div class="flex h-screen overflow-hidden">
-        <!-- Sidebar Component (dynamically loaded) -->
+
         <div id="app-sidebar"></div>
 
-        <!-- Main Content -->
         <main class="flex-1 overflow-y-auto">
             <div class="max-w-4xl mx-auto px-6 py-8">
                 <div class="card-fluent p-8 animate-slide-up">
@@ -31,29 +30,27 @@
                             class="inline-flex items-center gap-1 text-[#0078D4] text-body font-semibold mb-3 hover:underline">
                             <ion-icon name="arrow-back"></ion-icon> Kembali ke Dashboard
                         </a>
-                        <h2 class="text-title mb-2">Buat Kursus Baru</h2>
-                        <p class="text-body text-[#605E5C]">Mulai dengan memberikan judul dan deskripsi untuk kursus
+                        <h2 class="text-title mb-2">Buat Kelas Baru</h2>
+                        <p class="text-body text-[#605E5C]">Mulai dengan memberikan judul dan deskripsi untuk Kelas
                             Anda.</p>
                     </div>
 
                     <form @submit.prevent="handleCreateCourse" class="space-y-6">
-                        <!-- Title Input -->
+
                         <div class="space-y-2">
-                            <label class="block text-body font-semibold text-[#323130]">Judul Kursus</label>
+                            <label class="block text-body font-semibold text-[#323130]">Judul Kelas</label>
                             <input type="text" x-model="title" placeholder="Contoh: Pemrograman Web Lanjut"
                                 class="input-fluent w-full text-body-large" required />
                         </div>
 
-                        <!-- Description Input -->
                         <div class="space-y-2">
                             <label class="block text-body font-semibold text-[#323130]">Deskripsi</label>
                             <textarea x-model="description" placeholder="Jelaskan apa yang akan dipelajari siswa..."
                                 class="input-fluent w-full h-32 resize-none" required></textarea>
                         </div>
 
-                        <!-- Thumbnail Input -->
                         <div class="space-y-2">
-                            <label class="block text-body font-semibold text-[#323130]">Thumbnail Kursus</label>
+                            <label class="block text-body font-semibold text-[#323130]">Thumbnail Kelas</label>
 
                             <div class="border-2 border-dashed border-[#EDEBE9] rounded-xl p-8 text-center hover:border-[#0078D4] hover:bg-[#F3F2F1] transition-all cursor-pointer group"
                                 @click="$refs.fileInput.click()"
@@ -86,14 +83,13 @@
 
                         <div class="h-px bg-[#EDEBE9] my-6"></div>
 
-                        <!-- Actions -->
                         <div class="flex items-center justify-end gap-3">
                             <a href="../dashboard/instructor/index.html" class="btn-fluent btn-secondary-fluent">
                                 Batal
                             </a>
                             <button type="submit" class="btn-fluent btn-primary-fluent min-w-[120px]"
                                 :disabled="loading">
-                                <span x-show="!loading">Buat Kursus</span>
+                                <span x-show="!loading">Buat Kelas</span>
                                 <span x-show="loading" class="flex items-center gap-2">
                                     <span class="loading loading-spinner loading-xs"></span>
                                     Memproses...
@@ -106,7 +102,6 @@
         </main>
     </div>
 
-    <!-- Load Unified Sidebar -->
     <script src="../assets/js/components/sidebar.js"></script>
 
     <script>
@@ -182,7 +177,7 @@
                         window.location.href = `edit.html?id=${data[0].id}`;
 
                     } catch (error) {
-                        alert('Gagal membuat kursus: ' + error.message);
+                        alert('Gagal membuat Kelas: ' + error.message);
                     } finally {
                         this.loading = false;
                     }

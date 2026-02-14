@@ -9,7 +9,7 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@3.1.0/dist/full.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../../assets/js/utils/supabase-client.js"></script>
     <link rel="stylesheet" href="../../assets/css/styles.css">
@@ -18,12 +18,11 @@
 
 <body class="bg-[#F3F2F1] text-[#323130]" x-data="instructorDashboard" data-active-page="home">
     <div class="flex h-screen overflow-hidden">
-        <!-- Sidebar Component (dynamically loaded) -->
+
         <div id="app-sidebar"></div>
 
-        <!-- Main Content -->
         <main class="flex-1 overflow-y-auto">
-            <!-- Header -->
+
             <div class="border-b border-[#EDEBE9] bg-white sticky top-0 z-10">
                 <div class="max-w-7xl mx-auto px-6 py-6 flex justify-between items-center">
                     <div>
@@ -34,14 +33,13 @@
                     </div>
                     <a href="../../course/create.html" class="btn-fluent btn-primary-fluent">
                         <ion-icon name="add-circle-outline" class="text-xl"></ion-icon>
-                        Buat Kursus Baru
+                        Buat Kelas Baru
                     </a>
                 </div>
             </div>
 
             <div class="max-w-7xl mx-auto px-6 py-8 space-y-8">
 
-                <!-- Stats Overview -->
                 <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="card-fluent p-6 flex items-center gap-4">
                         <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-[#0078D4]">
@@ -59,7 +57,7 @@
                             <ion-icon name="book-outline" class="text-2xl"></ion-icon>
                         </div>
                         <div>
-                            <p class="text-caption text-[#605E5C] font-semibold uppercase">Kursus Aktif</p>
+                            <p class="text-caption text-[#605E5C] font-semibold uppercase">Kelas Aktif</p>
                             <h3 class="text-3xl font-bold text-[#323130]" x-text="publishedCourses">0</h3>
                         </div>
                     </div>
@@ -76,10 +74,9 @@
                     </div>
                 </section>
 
-                <!-- Managed Courses -->
                 <section>
                     <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-subtitle font-semibold">Kursus Saya</h2>
+                        <h2 class="text-subtitle font-semibold">Kelas Saya</h2>
                         <span class="text-body text-[#605E5C]" x-text="myCourses.length + ' Kursus'"></span>
                     </div>
 
@@ -87,7 +84,7 @@
                         <template x-for="course in myCourses" :key="course.id">
                             <div
                                 class="card-fluent p-0 overflow-hidden flex flex-col md:flex-row hover:shadow-md transition-shadow">
-                                <!-- Thumbnail / Color -->
+
                                 <div
                                     class="w-full md:w-48 h-32 md:h-auto bg-gradient-to-br from-[#0078D4] to-[#50E6FF] flex items-center justify-center relative shrink-0">
                                     <template x-if="course.thumbnail_url">
@@ -100,7 +97,6 @@
                                     </template>
                                 </div>
 
-                                <!-- Content -->
                                 <div class="p-6 flex-1 flex flex-col justify-between">
                                     <div class="flex justify-between items-start mb-2">
                                         <div>
@@ -139,19 +135,18 @@
                             </div>
                         </template>
 
-                        <!-- Empty State -->
                         <div x-show="myCourses.length === 0" class="card-fluent p-12 text-center">
                             <div
                                 class="w-16 h-16 rounded-full bg-[#EDEBE9] flex items-center justify-center mx-auto mb-4">
                                 <ion-icon name="school-outline" class="text-3xl text-[#8A8886]"></ion-icon>
                             </div>
-                            <h3 class="text-body-large font-semibold text-[#323130] mb-2">Belum ada kursus</h3>
+                            <h3 class="text-body-large font-semibold text-[#323130] mb-2">Belum ada Kelas</h3>
                             <p class="text-body text-[#605E5C] mb-6">Mulai bagikan pengetahuan Anda dengan membuat
-                                kursus pertama.</p>
+                                Kelas pertama.</p>
                             <a href="../../course/create.html"
                                 class="btn-fluent btn-primary-fluent inline-flex items-center gap-2 px-6 py-3">
                                 <ion-icon name="add-circle"></ion-icon>
-                                Buat Kursus
+                                Buat Kelas
                             </a>
                         </div>
                     </div>
@@ -161,7 +156,6 @@
         </main>
     </div>
 
-    <!-- Scripts -->
     <script src="../../assets/js/components/sidebar.js"></script>
     <script>
         document.addEventListener('alpine:init', () => {

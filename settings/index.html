@@ -7,19 +7,15 @@
     <title>Settings - Pesantren Teknologi Majapahit</title>
     <link rel="icon" type="image/x-icon" href="../assets/images/favicon.ico">
 
-    <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
-    <!-- Tailwind CSS & DaisyUI -->
     <link href="https://cdn.jsdelivr.net/npm/daisyui@3.1.0/dist/full.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
 
-    <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../assets/js/utils/supabase-client.js"></script>
 
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="../assets/css/styles.css">
     <link rel="stylesheet" href="../assets/css/sidebar.css">
 
@@ -33,12 +29,11 @@
 <body class="bg-[#F3F2F1] text-[#323130]" x-data="settingsPage" data-active-page="settings">
 
     <div class="flex h-screen overflow-hidden">
-        <!-- Sidebar Component (dynamically loaded) -->
+
         <div id="app-sidebar"></div>
 
-        <!-- Main Content -->
         <main class="flex-1 overflow-y-auto">
-            <!-- Header -->
+
             <div class="bg-white border-b border-[#EDEBE9] sticky top-0 z-20">
                 <div class="max-w-4xl mx-auto px-6 h-16 flex items-center">
                     <h1 class="text-title font-semibold">Settings</h1>
@@ -47,7 +42,6 @@
 
             <div class="max-w-4xl mx-auto px-6 py-8 space-y-8">
 
-                <!-- Profile Settings -->
                 <section class="card-fluent p-8 animate-fade-in">
                     <h2 class="text-xl font-bold mb-1 flex items-center gap-2">
                         <ion-icon name="person-circle-outline" class="text-[#0078D4] text-2xl"></ion-icon>
@@ -57,7 +51,6 @@
 
                     <form @submit.prevent="updateProfile" class="space-y-6 max-w-lg">
 
-                        <!-- Avatar Upload -->
                         <div class="flex items-center gap-6">
                             <div class="relative group">
                                 <div
@@ -81,14 +74,12 @@
                             </div>
                         </div>
 
-                        <!-- Full Name -->
                         <div>
                             <label class="block text-sm font-semibold mb-1.5">Full Name</label>
                             <input type="text" x-model="profile.full_name" class="input-fluent"
                                 placeholder="Your full name">
                         </div>
 
-                        <!-- Email (Read Only) -->
                         <div>
                             <label class="block text-sm font-semibold mb-1.5">Email Address</label>
                             <input type="email" x-model="profile.email"
@@ -107,7 +98,6 @@
                     </form>
                 </section>
 
-                <!-- Security Settings -->
                 <section class="card-fluent p-8 animate-fade-in" style="animation-delay: 0.1s">
                     <h2 class="text-xl font-bold mb-1 flex items-center gap-2">
                         <ion-icon name="shield-checkmark-outline" class="text-[#0078D4] text-2xl"></ion-icon>
@@ -151,7 +141,6 @@
         </main>
     </div>
 
-    <!-- Notification Toast -->
     <div class="toast toast-end z-50" x-show="notification.show" x-transition.duration.300ms>
         <div class="alert shadow-lg border"
             :class="notification.type === 'success' ? 'alert-success bg-green-50 border-green-200 text-green-800' : 'alert-error bg-red-50 border-red-200 text-red-800'">
@@ -161,7 +150,6 @@
         </div>
     </div>
 
-    <!-- Scripts -->
     <script src="../assets/js/components/sidebar.js"></script>
     <script>
         document.addEventListener('alpine:init', () => {

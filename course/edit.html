@@ -4,16 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Course - Pesantren Teknologi Majapahit</title>
+    <title>Edit Kelas - Pesantren Teknologi Majapahit</title>
     <link rel="icon" type="image/x-icon" href="../assets/images/favicon.ico">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@3.1.0/dist/full.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../assets/js/utils/supabase-client.js"></script>
 
-    <!-- Flatpickr for Date Time Picker -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/airbnb.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -25,7 +24,7 @@
             display: none !important;
         }
 
-        /* Modal Animation */
+        
         .modal-enter {
             animation: modal-enter 0.2s ease-out forwards;
         }
@@ -42,7 +41,7 @@
             }
         }
 
-        /* Flatpickr Customization to match Fluent */
+        
         .flatpickr-calendar {
             border-radius: 8px;
             box-shadow: 0 6.4px 14.4px rgba(0, 0, 0, 0.132), 0 1.2px 3.6px rgba(0, 0, 0, 0.108);
@@ -76,19 +75,18 @@
 
 <body class="bg-[#F3F2F1] text-[#323130]" x-data="editCourse" data-active-page="edit-course">
     <div class="flex h-screen overflow-hidden">
-        <!-- Sidebar Component (dynamically loaded) -->
+
         <div id="app-sidebar"></div>
 
-        <!-- Main Content -->
         <main class="flex-1 overflow-y-auto">
-            <!-- Header -->
+
             <div class="border-b border-[#EDEBE9] bg-white sticky top-0 z-20 shadow-sm">
                 <div class="max-w-6xl mx-auto px-6 py-4">
                     <div class="flex items-center justify-between">
                         <div>
                             <a href="../dashboard/instructor/index.html"
                                 class="text-[#605E5C] text-sm font-semibold mb-1 inline-flex items-center gap-1 hover:text-[#0078D4] transition-colors">
-                                <ion-icon name="arrow-back"></ion-icon> Back to Dashboard
+                                <ion-icon name="arrow-back"></ion-icon> Kembali ke Dashboard
                             </a>
                             <h1 class="text-2xl font-semibold text-[#323130]" x-text="course?.title || 'Loading...'">
                             </h1>
@@ -97,12 +95,12 @@
                             <button @click="publishCourse" x-show="course && !course.published"
                                 class="btn-fluent btn-primary-fluent shadow-md">
                                 <ion-icon name="checkmark-circle-outline"></ion-icon>
-                                Publish Course
+                                Publikasikan Kelas
                             </button>
                             <button @click="unpublishCourse" x-show="course && course.published"
                                 class="btn-fluent bg-white border border-[#8A8886] text-[#323130] hover:bg-[#F3F2F1] shadow-sm">
                                 <ion-icon name="pause-circle-outline"></ion-icon>
-                                Unpublish
+                                Batalkan Publikasi
                             </button>
                         </div>
                     </div>
@@ -111,20 +109,19 @@
 
             <div class="max-w-6xl mx-auto px-6 py-8">
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <!-- Left Column: Curriculum -->
+
                     <div class="lg:col-span-2 space-y-8">
 
-                        <!-- Modules Section -->
                         <section class="space-y-4">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <h2 class="text-xl font-semibold text-[#323130]">Course Curriculum</h2>
-                                    <p class="text-sm text-[#605E5C]">Organize your course into modules and lessons</p>
+                                    <h2 class="text-xl font-semibold text-[#323130]">Kurikulum Kelas</h2>
+                                    <p class="text-sm text-[#605E5C]">Atur Kelas Anda ke dalam modul dan pelajaran</p>
                                 </div>
                                 <button @click="openModuleModal"
                                     class="btn-fluent bg-white border border-[#8A8886] text-[#323130] hover:bg-[#F3F2F1] shadow-sm transition-transform hover:scale-105">
                                     <ion-icon name="add-outline"></ion-icon>
-                                    Add Module
+                                    Tambah Modul
                                 </button>
                             </div>
 
@@ -146,11 +143,11 @@
                                             <div class="flex items-center gap-2">
                                                 <button @click="openLessonModal(module.id)"
                                                     class="btn-fluent btn-sm bg-white border border-[#EDEBE9] text-[#0078D4] hover:bg-blue-50 shadow-sm">
-                                                    <ion-icon name="add"></ion-icon> Lesson
+                                                    <ion-icon name="add"></ion-icon> Pelajaran
                                                 </button>
                                                 <button @click="deleteModule(module.id)"
                                                     class="btn-fluent btn-sm btn-icon w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50 hover:text-red-600 text-[#605E5C] transition-colors"
-                                                    title="Delete Module">
+                                                    title="Hapus Modul">
                                                     <ion-icon name="trash-outline"></ion-icon>
                                                 </button>
                                             </div>
@@ -177,10 +174,10 @@
                                             </template>
                                             <li x-show="!module.lessons || module.lessons.length === 0"
                                                 class="px-5 py-8 text-center text-sm text-[#605E5C] bg-white/50">
-                                                <p>No lessons yet.</p>
+                                                <p>Belum ada pelajaran.</p>
                                                 <button @click="openLessonModal(module.id)"
-                                                    class="text-[#0078D4] hover:underline mt-1 font-medium">Add the
-                                                    first lesson</button>
+                                                    class="text-[#0078D4] hover:underline mt-1 font-medium">Tambahkan
+                                                    pelajaran pertama</button>
                                             </li>
                                         </ul>
                                     </div>
@@ -193,25 +190,24 @@
                                         class="w-14 h-14 bg-[#F3F2F1] rounded-full flex items-center justify-center mx-auto mb-3 text-[#8A8886]">
                                         <ion-icon name="layers-outline" class="text-3xl"></ion-icon>
                                     </div>
-                                    <h3 class="font-semibold text-[#323130] text-lg">No modules yet</h3>
-                                    <p class="text-sm text-[#605E5C] mb-4">Start by creating a module to organize your
-                                        lessons.</p>
-                                    <button class="btn-fluent btn-primary-fluent shadow-md">Add Module</button>
+                                    <h3 class="font-semibold text-[#323130] text-lg">Belum ada modul</h3>
+                                    <p class="text-sm text-[#605E5C] mb-4">Mulai dengan membuat modul untuk mengatur
+                                        pelajaran Anda.</p>
+                                    <button class="btn-fluent btn-primary-fluent shadow-md">Tambah Modul</button>
                                 </div>
                             </div>
                         </section>
 
-                        <!-- Assignments Section -->
                         <section class="space-y-4 pt-8 border-t border-[#EDEBE9]">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <h2 class="text-xl font-semibold text-[#323130]">Assignments</h2>
-                                    <p class="text-sm text-[#605E5C]">Create tasks for students to submit</p>
+                                    <h2 class="text-xl font-semibold text-[#323130]">Tugas</h2>
+                                    <p class="text-sm text-[#605E5C]">Buat tugas untuk dikumpulkan siswa</p>
                                 </div>
                                 <button @click="openAssignmentModal"
                                     class="btn-fluent bg-white border border-[#8A8886] text-[#323130] hover:bg-[#F3F2F1] shadow-sm transition-transform hover:scale-105">
                                     <ion-icon name="add-outline"></ion-icon>
-                                    Add Assignment
+                                    Tambah Tugas
                                 </button>
                             </div>
 
@@ -230,18 +226,18 @@
                                                 <div class="flex items-center gap-2 text-xs text-[#605E5C] mt-1">
                                                     <ion-icon name="calendar-outline"></ion-icon>
                                                     <span
-                                                        x-text="assignment.due_date ? 'Due: ' + new Date(assignment.due_date).toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }) : 'No due date'"></span>
+                                                        x-text="assignment.due_date ? 'Tenggat: ' + new Date(assignment.due_date).toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }) : 'Tanpa tenggat waktu'"></span>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="flex items-center gap-3 opacity-80 hover:opacity-100">
                                             <a :href="`../assignment/view.html?id=${assignment.id}`"
                                                 class="btn-fluent btn-sm bg-white border border-[#EDEBE9] text-[#323130] hover:bg-[#F3F2F1] shadow-sm">
-                                                View
+                                                Lihat
                                             </a>
                                             <button @click="deleteAssignment(assignment.id)"
                                                 class="btn-fluent btn-sm btn-icon w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50 hover:text-red-600 text-[#605E5C] transition-colors"
-                                                title="Delete Assignment">
+                                                title="Hapus Tugas">
                                                 <ion-icon name="trash-outline"></ion-icon>
                                             </button>
                                         </div>
@@ -253,46 +249,45 @@
                                         class="w-12 h-12 bg-[#F3F2F1] rounded-full flex items-center justify-center mx-auto mb-3 text-[#8A8886]">
                                         <ion-icon name="clipboard-outline" class="text-2xl"></ion-icon>
                                     </div>
-                                    No assignments created yet.
+                                    Belum ada tugas yang dibuat.
                                 </div>
                             </div>
                         </section>
                     </div>
 
-                    <!-- Right Column: Settings -->
                     <div class="space-y-6">
                         <div class="card-fluent p-6 sticky top-24 shadow-sm">
                             <h3 class="text-lg font-semibold mb-4 text-[#323130] flex items-center gap-2">
-                                <ion-icon name="stats-chart-outline"></ion-icon> Course Status
+                                <ion-icon name="stats-chart-outline"></ion-icon> Status Kelas
                             </h3>
 
                             <div class="flex flex-col gap-4">
                                 <div class="flex items-center justify-between p-3 bg-[#F3F2F1] rounded-lg">
-                                    <span class="text-sm font-medium">Visibility</span>
+                                    <span class="text-sm font-medium">Visibilitas</span>
                                     <span class="px-2.5 py-1 rounded text-xs font-semibold border shadow-sm"
                                         :class="course?.published ? 'bg-green-50 text-green-700 border-green-200' : 'bg-gray-100 text-gray-600 border-gray-200'"
-                                        x-text="course?.published ? 'Published' : 'Draft'">
+                                        x-text="course?.published ? 'Terbit' : 'Draf'">
                                     </span>
                                 </div>
 
                                 <div class="space-y-3 pt-2">
                                     <div class="flex justify-between text-sm items-center">
                                         <span class="text-[#605E5C] flex items-center gap-2">
-                                            <ion-icon name="folder-outline"></ion-icon> Modules
+                                            <ion-icon name="folder-outline"></ion-icon> Modul
                                         </span>
                                         <span class="font-semibold bg-gray-100 px-2 py-0.5 rounded text-xs"
                                             x-text="modules.length"></span>
                                     </div>
                                     <div class="flex justify-between text-sm items-center">
                                         <span class="text-[#605E5C] flex items-center gap-2">
-                                            <ion-icon name="document-text-outline"></ion-icon> Lessons
+                                            <ion-icon name="document-text-outline"></ion-icon> Pelajaran
                                         </span>
                                         <span class="font-semibold bg-gray-100 px-2 py-0.5 rounded text-xs"
                                             x-text="modules.reduce((acc, m) => acc + (m.lessons?.length || 0), 0)"></span>
                                     </div>
                                     <div class="flex justify-between text-sm items-center">
                                         <span class="text-[#605E5C] flex items-center gap-2">
-                                            <ion-icon name="clipboard-outline"></ion-icon> Assignments
+                                            <ion-icon name="clipboard-outline"></ion-icon> Tugas
                                         </span>
                                         <span class="font-semibold bg-gray-100 px-2 py-0.5 rounded text-xs"
                                             x-text="assignments.length"></span>
@@ -302,7 +297,7 @@
                                 <div class="pt-4 border-t border-[#EDEBE9]">
                                     <a :href="`view.html?id=${courseId}`" target="_blank"
                                         class="btn-fluent btn-secondary-fluent w-full text-center flex justify-center items-center gap-2 shadow-sm hover:shadow-md transition-shadow">
-                                        <ion-icon name="eye-outline"></ion-icon> Preview Course
+                                        <ion-icon name="eye-outline"></ion-icon> Pratinjau Kelas
                                     </a>
                                 </div>
                             </div>
@@ -313,25 +308,22 @@
         </main>
     </div>
 
-    <!-- Improved Add Module Modal -->
     <div x-cloak x-show="showModuleModal" class="fixed z-50 inset-0 overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen px-4">
-            <!-- Backdrop -->
+
             <div class="fixed inset-0 bg-black/40 backdrop-blur-sm transition-opacity" x-show="showModuleModal"
                 x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0"
                 x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200"
                 x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
                 @click="showModuleModal = false"></div>
 
-            <!-- Modal Card -->
             <div class="bg-white rounded-2xl max-w-md w-full p-0 relative z-10 shadow-2xl transform transition-all modal-enter overflow-hidden"
                 x-show="showModuleModal" @click.away="showModuleModal = false">
 
-                <!-- Header -->
                 <div class="px-6 py-4 border-b border-[#EDEBE9] bg-[#FAF9F8] flex justify-between items-center">
                     <h3 class="text-lg font-bold text-[#323130] flex items-center gap-2">
-                        <ion-icon name="folder-add-outline" class="text-[#0078D4] text-xl"></ion-icon>
-                        New Module
+                        <ion-icon name="folder-open-outline" class="text-[#0078D4] text-xl"></ion-icon>
+                        Modul Baru
                     </h3>
                     <button @click="showModuleModal = false"
                         class="text-[#605E5C] hover:text-[#323130] hover:bg-[#EDEBE9] p-1 rounded-full transition-colors">
@@ -339,31 +331,28 @@
                     </button>
                 </div>
 
-                <!-- Body -->
                 <div class="p-6">
-                    <label class="block text-sm font-semibold text-[#323130] mb-2">Module Title</label>
+                    <label class="block text-sm font-semibold text-[#323130] mb-2">Judul Modul</label>
                     <div class="relative">
-                        <input type="text" x-model="newModuleTitle" placeholder="e.g. Introduction to Programming"
+                        <input type="text" x-model="newModuleTitle" placeholder="cth. Pengantar Pemrograman"
                             class="input-fluent w-full pl-10 h-11 text-[15px] shadow-sm focus:ring-2 focus:ring-[#0078D4]/20"
                             @keydown.enter="addModule">
                         <ion-icon name="text-outline"
                             class="absolute left-3.5 top-3.5 text-[#605E5C] text-lg"></ion-icon>
                     </div>
-                    <p class="text-xs text-[#605E5C] mt-2 ml-1">Give your module a clear and descriptive name.</p>
+                    <p class="text-xs text-[#605E5C] mt-2 ml-1">Berikan nama yang jelas dan deskriptif untuk modul Anda.
+                    </p>
                 </div>
 
-                <!-- Footer -->
                 <div class="px-6 py-4 bg-[#F3F2F1] flex gap-3 justify-end border-t border-[#EDEBE9]">
                     <button @click="showModuleModal = false"
-                        class="btn-fluent bg-white border border-[#8A8886] hover:bg-gray-50 shadow-sm px-4">Cancel</button>
-                    <button @click="addModule" class="btn-fluent btn-primary-fluent shadow-md px-6">Create
-                        Module</button>
+                        class="btn-fluent bg-white border border-[#8A8886] hover:bg-gray-50 shadow-sm px-4">Batal</button>
+                    <button @click="addModule" class="btn-fluent btn-primary-fluent shadow-md px-6">Buat Modul</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Improved Add Lesson Modal -->
     <div x-cloak x-show="showLessonModal" class="fixed z-50 inset-0 overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen px-4 py-8">
             <div class="fixed inset-0 bg-black/40 backdrop-blur-sm transition-opacity" x-show="showLessonModal"
@@ -378,7 +367,7 @@
                 <div class="px-6 py-4 border-b border-[#EDEBE9] bg-[#FAF9F8] flex justify-between items-center">
                     <h3 class="text-lg font-bold text-[#323130] flex items-center gap-2">
                         <ion-icon name="document-text-outline" class="text-[#0078D4] text-xl"></ion-icon>
-                        Add New Lesson
+                        Tambah Pelajaran Baru
                     </h3>
                     <button @click="showLessonModal = false"
                         class="text-[#605E5C] hover:text-[#323130] hover:bg-[#EDEBE9] p-1 rounded-full transition-colors">
@@ -388,9 +377,9 @@
 
                 <div class="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
                     <div>
-                        <label class="block text-sm font-semibold mb-1.5">Lesson Title</label>
+                        <label class="block text-sm font-semibold mb-1.5">Judul Pelajaran</label>
                         <div class="relative">
-                            <input type="text" x-model="newLessonTitle" placeholder="e.g. Getting Started with HTML"
+                            <input type="text" x-model="newLessonTitle" placeholder="cth. Memulai dengan HTML"
                                 class="input-fluent w-full pl-10 h-11">
                             <ion-icon name="text-outline"
                                 class="absolute left-3.5 top-3.5 text-[#605E5C] text-lg"></ion-icon>
@@ -398,15 +387,15 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-semibold mb-1.5">Content / Description</label>
-                        <textarea x-model="newLessonContent" placeholder="Describe what this lesson is about..."
+                        <label class="block text-sm font-semibold mb-1.5">Konten / Deskripsi</label>
+                        <textarea x-model="newLessonContent" placeholder="Jelaskan tentang apa pelajaran ini..."
                             rows="4" class="input-fluent w-full"></textarea>
                     </div>
 
                     <div class="p-5 bg-[#F8F9FA] rounded-xl border border-[#EDEBE9] space-y-4">
                         <h4
                             class="text-sm font-bold text-[#323130] flex items-center gap-2 border-b border-[#E1DFDD] pb-2">
-                            <ion-icon name="videocam" class="text-[#0078D4]"></ion-icon> Video Content
+                            <ion-icon name="play-circle" class="text-[#0078D4]"></ion-icon> Konten Media (Video / Audio)
                         </h4>
 
                         <div>
@@ -423,28 +412,29 @@
 
                         <div class="relative flex py-1 items-center">
                             <div class="flex-grow border-t border-gray-300"></div>
-                            <span class="flex-shrink-0 mx-4 text-gray-400 text-xs font-semibold">OR UPLOAD</span>
+                            <span class="flex-shrink-0 mx-4 text-gray-400 text-xs font-semibold">ATAU UNGGAH FILE</span>
                             <div class="flex-grow border-t border-gray-300"></div>
                         </div>
 
                         <div>
                             <label
-                                class="text-xs font-semibold text-[#605E5C] mb-1.5 block uppercase tracking-wide">Video
-                                File</label>
-                            <input type="file" @change="videoFile = $event.target.files[0]" accept="video/*"
+                                class="text-xs font-semibold text-[#605E5C] mb-1.5 block uppercase tracking-wide">File
+                                Video / Audio</label>
+                            <input type="file" @change="videoFile = $event.target.files[0]" accept="video/*,audio/*"
                                 class="file-input file-input-bordered file-input-primary w-full bg-white">
+                            <p class="text-[10px] text-[#605E5C] mt-1">Mendukung MP4, MP3, WAV, dll.</p>
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-semibold mb-1.5">Attachment (Optional)</label>
+                        <label class="block text-sm font-semibold mb-1.5">Lampiran (Opsional)</label>
                         <input type="file" @change="attachmentFile = $event.target.files[0]"
                             class="file-input file-input-bordered w-full bg-white">
                     </div>
 
                     <div x-show="uploadProgress > 0" class="w-full bg-blue-50 p-3 rounded-lg border border-blue-100">
                         <div class="flex justify-between text-xs font-semibold text-blue-700 mb-1">
-                            <span>Uploading...</span>
+                            <span>Mengunggah...</span>
                             <span x-text="uploadProgress + '%'"></span>
                         </div>
                         <div class="h-2 bg-blue-200 rounded-full overflow-hidden">
@@ -456,19 +446,18 @@
 
                 <div class="px-6 py-4 bg-[#F3F2F1] flex gap-3 justify-end border-t border-[#EDEBE9]">
                     <button @click="showLessonModal = false"
-                        class="btn-fluent bg-white border border-[#8A8886] hover:bg-gray-50 shadow-sm px-4">Cancel</button>
+                        class="btn-fluent bg-white border border-[#8A8886] hover:bg-gray-50 shadow-sm px-4">Batal</button>
                     <button @click="addLesson" :disabled="uploading"
                         class="btn-fluent btn-primary-fluent shadow-md min-w-[120px] px-6">
-                        <span x-show="!uploading" class="flex items-center gap-2">Add Lesson</span>
+                        <span x-show="!uploading" class="flex items-center gap-2">Tambah Pelajaran</span>
                         <span x-show="uploading" class="flex items-center gap-2"><ion-icon name="refresh"
-                                class="animate-spin"></ion-icon> Uploading</span>
+                                class="animate-spin"></ion-icon> Mengunggah</span>
                     </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Improved Add Assignment Modal -->
     <div x-cloak x-show="showAssignmentModal" class="fixed z-50 inset-0 overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen px-4">
             <div class="fixed inset-0 bg-black/40 backdrop-blur-sm transition-opacity" x-show="showAssignmentModal"
@@ -483,7 +472,7 @@
                 <div class="px-6 py-4 border-b border-[#EDEBE9] bg-[#FAF9F8] flex justify-between items-center">
                     <h3 class="text-lg font-bold text-[#323130] flex items-center gap-2">
                         <ion-icon name="clipboard-outline" class="text-[#0078D4] text-xl"></ion-icon>
-                        Create Assignment
+                        Buat Tugas
                     </h3>
                     <button @click="showAssignmentModal = false"
                         class="text-[#605E5C] hover:text-[#323130] hover:bg-[#EDEBE9] p-1 rounded-full transition-colors">
@@ -493,21 +482,21 @@
 
                 <div class="p-6 space-y-4">
                     <div>
-                        <label class="block text-sm font-semibold mb-1.5">Assignment Title</label>
+                        <label class="block text-sm font-semibold mb-1.5">Judul Tugas</label>
                         <div class="relative">
-                            <input type="text" x-model="newAssignmentTitle" placeholder="e.g. Final Project Submission"
+                            <input type="text" x-model="newAssignmentTitle" placeholder="cth. Pengumpulan Proyek Akhir"
                                 class="input-fluent w-full pl-10 h-11">
                             <ion-icon name="text-outline"
                                 class="absolute left-3.5 top-3.5 text-[#605E5C] text-lg"></ion-icon>
                         </div>
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold mb-1.5">Instructions</label>
-                        <textarea x-model="newAssignmentDescription" placeholder="Detailed instructions for students..."
+                        <label class="block text-sm font-semibold mb-1.5">Instruksi</label>
+                        <textarea x-model="newAssignmentDescription" placeholder="Instruksi detail untuk siswa..."
                             rows="4" class="input-fluent w-full"></textarea>
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold mb-1.5">Due Date</label>
+                        <label class="block text-sm font-semibold mb-1.5">Tenggat Waktu</label>
                         <div class="relative">
                             <input type="datetime-local" x-model="newAssignmentDueDate"
                                 class="input-fluent w-full pl-10 h-11 datepicker-input">
@@ -519,15 +508,13 @@
 
                 <div class="px-6 py-4 bg-[#F3F2F1] flex gap-3 justify-end border-t border-[#EDEBE9]">
                     <button @click="showAssignmentModal = false"
-                        class="btn-fluent bg-white border border-[#8A8886] hover:bg-gray-50 shadow-sm px-4">Cancel</button>
-                    <button @click="addAssignment" class="btn-fluent btn-primary-fluent shadow-md px-6">Create
-                        Assignment</button>
+                        class="btn-fluent bg-white border border-[#8A8886] hover:bg-gray-50 shadow-sm px-4">Batal</button>
+                    <button @click="addAssignment" class="btn-fluent btn-primary-fluent shadow-md px-6">Buat
+                        Tugas</button>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Delete Confirmation Modal (Optional, using native confirm for now) -->
 
     <script>
         document.addEventListener('alpine:init', () => {
@@ -557,7 +544,7 @@
 
                 async init() {
                     if (!this.courseId) {
-                        alert('No course ID provided');
+                        alert('No Kelas ID provided');
                         window.location.href = '../dashboard/instructor/index.html';
                         return;
                     }
@@ -609,7 +596,7 @@
                 },
 
                 async deleteModule(moduleId) {
-                    if (!confirm('Are you sure you want to delete this module? All lessons inside it will also be deleted.')) return;
+                    if (!confirm('Apakah Anda yakin ingin menghapus modul ini? Semua pelajaran di dalamnya juga akan dihapus.')) return;
 
                     const { error } = await supabase.from('modules').delete().eq('id', moduleId);
 
@@ -677,7 +664,7 @@
                 },
 
                 async deleteLesson(lessonId) {
-                    if (!confirm('Are you sure you want to delete this lesson?')) return;
+                    if (!confirm('Apakah Anda yakin ingin menghapus pelajaran ini?')) return;
 
                     const { error } = await supabase.from('lessons').delete().eq('id', lessonId);
 
@@ -713,7 +700,7 @@
                 },
 
                 async deleteAssignment(assignmentId) {
-                    if (!confirm('Are you sure you want to delete this assignment? All student submissions will be lost.')) return;
+                    if (!confirm('Apakah Anda yakin ingin menghapus tugas ini? Semua pengumpulan siswa akan hilang.')) return;
 
                     const { error } = await supabase.from('assignments').delete().eq('id', assignmentId);
 
@@ -725,13 +712,13 @@
                 },
 
                 async publishCourse() {
-                    if (!confirm('Publish this course? Students will be able to see it in the catalog.')) return;
+                    if (!confirm('Publikasikan Kelas ini? Siswa akan dapat melihatnya di katalog.')) return;
                     const { error } = await supabase.from('courses').update({ published: true }).eq('id', this.courseId);
                     if (!error) this.course.published = true;
                 },
 
                 async unpublishCourse() {
-                    if (!confirm('Unpublish this course? It will be hidden from the catalog.')) return;
+                    if (!confirm('Batalkan publikasi Kelas ini? Ini akan disembunyikan dari katalog.')) return;
                     const { error } = await supabase.from('courses').update({ published: false }).eq('id', this.courseId);
                     if (!error) this.course.published = false;
                 }

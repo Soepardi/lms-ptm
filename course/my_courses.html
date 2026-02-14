@@ -4,12 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kursus Saya - Pesantren Teknologi Majapahit</title>
+    <title>Kelas Saya - Pesantren Teknologi Majapahit</title>
     <link rel="icon" type="image/x-icon" href="../assets/images/favicon.ico">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@3.1.0/dist/full.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../assets/js/utils/supabase-client.js"></script>
     <link rel="stylesheet" href="../assets/css/styles.css">
@@ -18,33 +18,30 @@
 
 <body class="bg-[#F3F2F1] text-[#323130]" x-data="myCoursesApp" data-active-page="my-courses">
     <div class="flex h-screen overflow-hidden">
-        <!-- Sidebar Component (dynamically loaded) -->
+
         <div id="app-sidebar"></div>
 
-        <!-- Main Content -->
         <main class="flex-1 overflow-y-auto">
-            <!-- Header -->
+
             <div class="bg-white border-b border-[#EDEBE9] sticky top-0 z-10">
                 <div class="max-w-7xl mx-auto px-6 py-6">
-                    <h1 class="text-title font-semibold mb-1">Kursus Saya</h1>
+                    <h1 class="text-title font-semibold mb-1">Kelas Saya</h1>
                     <p class="text-body text-[#605E5C]">Lanjutkan pembelajaran Anda</p>
                 </div>
             </div>
 
             <div class="max-w-7xl mx-auto px-6 py-8 space-y-8">
 
-                <!-- Course Grid -->
                 <section>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         <template x-for="enrollment in enrollments" :key="enrollment.course.id">
                             <div class="card-fluent card-fluent-interactive p-0 flex flex-col h-full overflow-hidden animate-slide-up cursor-pointer group"
                                 @click="viewCourse(enrollment.course.id)">
 
-                                <!-- Thumbnail -->
                                 <div class="relative aspect-video bg-gray-200 overflow-hidden">
                                     <img :src="enrollment.course.thumbnail_url || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=640&h=360&fit=crop'"
                                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                        alt="Course Thumbnail">
+                                        alt="Kelas Thumbnail">
                                     <div
                                         class="absolute top-3 right-3 bg-blue-100 text-blue-800 text-xs font-bold px-2 py-1 rounded shadow-sm">
                                         PROGRES: <span x-text="(enrollment.progress_pct || 0) + '%'"></span>
@@ -73,22 +70,20 @@
                         </template>
                     </div>
 
-                    <!-- Empty State -->
                     <div x-show="!loading && enrollments.length === 0" class="text-center py-16">
                         <div
                             class="w-16 h-16 bg-[#F3F2F1] rounded-full flex items-center justify-center mx-auto mb-4 text-[#8A8886]">
                             <ion-icon name="book-outline" class="text-3xl"></ion-icon>
                         </div>
-                        <h3 class="text-body-large font-semibold text-[#323130]">Belum ada kursus yang diikuti</h3>
+                        <h3 class="text-body-large font-semibold text-[#323130]">Belum ada Kelas yang diikuti</h3>
                         <p class="text-body text-[#605E5C] mt-1">Mulailah perjalanan belajar Anda dengan mendaftar di
-                            kursus pertama.</p>
+                            Kelas pertama.</p>
                         <a href="catalog.html"
                             class="btn-fluent btn-primary-fluent mt-4 inline-flex items-center gap-2">
-                            <ion-icon name="compass-outline"></ion-icon> Jelajahi Kursus
+                            <ion-icon name="compass-outline"></ion-icon> Jelajahi Kelas
                         </a>
                     </div>
 
-                    <!-- Loading State -->
                     <div x-show="loading" class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <template x-for="i in 3">
                             <div class="card-fluent p-0 h-80 animate-pulse">
@@ -107,7 +102,6 @@
         </main>
     </div>
 
-    <!-- Script -->
     <script src="../assets/js/components/sidebar.js"></script>
     <script>
         document.addEventListener('alpine:init', () => {
@@ -143,7 +137,7 @@
                     }
 
                     if (enrollments && enrollments.length > 0) {
-                        // Step 2: Fetch courses for these enrollments
+                        // Step 2: Fetch Courses for these enrollments
                         const courseIds = enrollments.map(e => e.course_id);
 
                         const { data: courses, error: coursesError } = await supabase

@@ -4,13 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detail Kursus - Pesantren Teknologi Majapahit</title>
+    <title>Detail Kelas - Pesantren Teknologi Majapahit</title>
     <link rel="icon" type="image/x-icon" href="../assets/images/favicon.ico">
 
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@3.1.0/dist/full.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../assets/js/utils/supabase-client.js"></script>
     <link rel="stylesheet" href="../assets/css/styles.css">
@@ -21,7 +21,7 @@
             display: none !important;
         }
 
-        .course-hero-overlay {
+        .Kelas-hero-overlay {
             background: linear-gradient(180deg, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.8) 100%);
         }
     </style>
@@ -30,23 +30,21 @@
 <body class="bg-[#F3F2F1] text-[#323130]" x-data="courseView" data-active-page="course">
 
     <div class="flex h-screen overflow-hidden">
-        <!-- Sidebar Component (dynamically loaded) -->
+
         <div id="app-sidebar"></div>
 
-        <!-- Main Content -->
         <main class="flex-1 overflow-y-auto relative">
 
-            <!-- Hero Section -->
             <div class="relative bg-[#201F1E] text-white min-h-[400px] flex items-end">
-                <!-- Background Image -->
+
                 <div class="absolute inset-0 z-0">
                     <img :src="course?.thumbnail_url || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1280&h=720&fit=crop'"
-                        class="w-full h-full object-cover opacity-60" alt="Course Thumbnail">
+                        class="w-full h-full object-cover opacity-60" alt="Kelas Thumbnail">
                     <div class="absolute inset-0 bg-gradient-to-t from-[#201F1E] via-[#201F1E]/60 to-transparent"></div>
                 </div>
 
                 <div class="relative z-10 w-full max-w-7xl mx-auto px-6 pb-12 pt-20">
-                    <!-- Breadcrumb -->
+
                     <a href="catalog.html"
                         class="inline-flex items-center gap-2 text-white/80 hover:text-white mb-6 text-sm font-semibold transition-colors">
                         <ion-icon name="arrow-back"></ion-icon> Kembali ke Katalog
@@ -55,11 +53,10 @@
                     <div class="flex flex-col md:flex-row gap-8 items-start md:items-end justify-between">
                         <div class="flex-1">
                             <h1 class="text-4xl md:text-5xl font-bold mb-4 leading-tight text-shadow-sm"
-                                x-text="course?.title">Memuat Kursus...</h1>
+                                x-text="course?.title">Memuat Kelas...</h1>
                             <p class="text-white/90 text-lg md:text-xl max-w-3xl mb-8 leading-relaxed font-light"
                                 x-text="course?.description"></p>
 
-                            <!-- Metadata -->
                             <div class="flex flex-wrap items-center gap-8 mb-8">
                                 <div class="flex items-center gap-3">
                                     <div
@@ -70,7 +67,7 @@
                                         <div class="text-[10px] text-white/60 uppercase tracking-widest font-bold">
                                             Instruktur</div>
                                         <div class="font-semibold text-sm"
-                                            x-text="instructor?.full_name || 'Loading...'"></div>
+                                            x-text="instructor?.full_name || 'Memuat...'"></div>
                                     </div>
                                 </div>
                                 <div class="h-8 w-px bg-white/20"></div>
@@ -85,7 +82,6 @@
                             </div>
                         </div>
 
-                        <!-- Enrollment Card (Floating on Desktop, Inline on Mobile) -->
                         <div class="w-full md:w-auto shrink-0">
                             <template x-if="isEnrolled">
                                 <div
@@ -114,7 +110,7 @@
                                         dan sertifikat.</p>
                                     <button @click="enrollInCourse"
                                         class="w-full btn-fluent btn-primary-fluent py-3 font-bold text-base shadow-lg">
-                                        Daftar Kursus
+                                        Daftar Kelas
                                     </button>
                                 </div>
                             </template>
@@ -123,10 +119,8 @@
                 </div>
             </div>
 
-            <!-- Content Area -->
             <div class="max-w-7xl mx-auto px-6 py-10 space-y-8">
 
-                <!-- Tabs Navigation -->
                 <div class="border-b border-[#EDEBE9]">
                     <div class="flex gap-8">
                         <button @click="activeTab = 'materi'"
@@ -142,7 +136,6 @@
                     </div>
                 </div>
 
-                <!-- Tab 1: Materi -->
                 <div x-show="activeTab === 'materi'" class="animate-slide-up space-y-6">
                     <template x-for="(module, index) in modules" :key="module.id">
                         <div class="card-fluent p-0 overflow-hidden border border-[#EDEBE9]">
@@ -173,7 +166,7 @@
                                 <template x-for="(lesson, lIndex) in module.lessons" :key="lesson.id">
                                     <a :href="`../lesson/view.html?id=${lesson.id}`"
                                         class="flex items-center gap-4 p-4 pl-[4.5rem] hover:bg-[#F3F2F1] border-b border-[#EDEBE9] last:border-0 transition-colors group relative">
-                                        <!-- Connector Line (Optional Visual) -->
+
                                         <div
                                             class="absolute left-[2.75rem] top-0 bottom-0 w-px bg-gray-200 group-last:bottom-1/2">
                                         </div>
@@ -210,12 +203,11 @@
                             <ion-icon name="library-outline" class="text-3xl"></ion-icon>
                         </div>
                         <h3 class="text-body-large font-bold text-[#323130]">Materi Belum Tersedia</h3>
-                        <p class="text-caption text-[#605E5C] mt-2">Instruktur sedang menyiapkan materi untuk kursus
+                        <p class="text-caption text-[#605E5C] mt-2">Instruktur sedang menyiapkan materi untuk Kelas
                             ini.</p>
                     </div>
                 </div>
 
-                <!-- Tab 2: Tugas -->
                 <div x-show="activeTab === 'tugas'" class="animate-slide-up space-y-6" x-cloak>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <template x-for="assign in assignments" :key="assign.id">
@@ -268,12 +260,11 @@
         </main>
     </div>
 
-    <!-- Scripts -->
     <script src="../assets/js/components/sidebar.js"></script>
     <script>
         document.addEventListener('alpine:init', () => {
             Alpine.data('courseView', () => ({
-                course: null,
+                Kelas: null,
                 modules: [],
                 assignments: [],
                 instructor: null,

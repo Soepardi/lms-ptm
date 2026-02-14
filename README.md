@@ -1,6 +1,6 @@
 # LMS Pesantren Teknologi Majapahit
 
-Sebuah Learning Management System (LMS) modern dan ringan yang dirancang untuk Pesantren Teknologi Majapahit. Platform ini memfasilitasi kegiatan belajar mengajar dengan antarmuka yang bersih dan fitur yang komprehensif untuk Siswa, Instruktur, dan Administrator.
+Sebuah Learning Management System (LMS) modern dan ringan yang dirancang untuk Pesantren Teknologi Majapahit. Platform ini memfasilitasi kegiatan belajar mengajar dengan antarmuka yang bersih dan fitur yang komprehensif untuk Siswa, dan guru.
 
 ## 🚀 Teknologi yang Digunakan (Tech Stack)
 
@@ -70,6 +70,33 @@ Karena aplikasi ini menggunakan arsitektur **Client-Side** (tanpa backend server
 5.  Aplikasi akan berjalan di browser lokal Anda.
 
 > **Catatan**: Pastikan file `assets/js/utils/supabase-client.js` sudah terkonfigurasi dengan URL dan Anon Key project Supabase Anda.
+
+## 🌐 Deploy ke GitHub Pages
+
+Karena aplikasi ini bersifat **Client-Side** (Single Page Application-like) dan menggunakan Supabase sebagai Backend-as-a-Service, Anda dapat dengan mudah meng-hosting-nya secara gratis menggunakan **GitHub Pages**.
+
+### Langkah-langkah:
+
+1.  **Push ke GitHub**:
+    - Buat repositori baru di GitHub.
+    - Push kode project ini ke repositori tersebut.
+    - Pastikan `index.html` berada di root direktori.
+
+2.  **Konfigurasi Supabase**:
+    - Pastikan URL dan Anon Key di `assets/js/utils/supabase-client.js` sudah benar.
+    - Di Dashboard Supabase Anda, masuk ke **Authentication** > **URL Configuration**.
+    - Tambahkan URL GitHub Pages Anda (contoh: `https://username.github.io/nama-repo/`) ke dalam **Site URL** atau **Redirect URLs** agar fitur login redirect berfungsi dengan baik.
+
+3.  **Aktifkan GitHub Pages**:
+    - Buka tab **Settings** di repositori GitHub Anda.
+    - Pilih menu **Pages** di sidebar kiri.
+    - Pada bagian **Build and deployment**, pilih **Source** sebagai `Deploy from a branch`.
+    - Pilih branch `main` (atau `master`) dan folder `/ (root)`.
+    - Klik **Save**.
+
+4.  **Selesai**:
+    - Tunggu beberapa saat, GitHub akan memberikan URL project Anda.
+    - Buka URL tersebut, dan aplikasi siap digunakan!
 
 ## 📱 Struktur Direktori
 

@@ -57,12 +57,12 @@ const FluentSidebar = {
                     ${userRole !== 'instructor' ? `
                     <a href="/course/catalog.html" 
                         class="sidebar-link ${currentPath.includes('catalog') || activePage === 'discover' ? 'active' : ''}">
-                        <ion-icon name="compass-outline"></ion-icon> Discover
+                        <ion-icon name="compass-outline"></ion-icon> Jelajahi
                     </a>
                     
                     <a href="/course/my_courses.html" 
                         class="sidebar-link ${currentPath.includes('my_courses') || activePage === 'my-courses' ? 'active' : ''}">
-                        <ion-icon name="library-outline"></ion-icon> My Courses
+                        <ion-icon name="library-outline"></ion-icon> Kelas Saya
                     </a>` : ''}
 
                     ${this.renderRoleSpecificLinks(userRole, activePage, currentPath)}
@@ -78,7 +78,7 @@ const FluentSidebar = {
             return `
                 <div class="h-px bg-[#EDEBE9] my-2"></div>
                 <a href="/course/create.html" class="sidebar-link ${currentPath.includes('create') || activePage === 'create-course' ? ' active' : ''}">
-                    <ion-icon name="add-circle-outline"></ion-icon> Create Course
+                    <ion-icon name="add-circle-outline"></ion-icon> Buat Kelas
                 </a>
             `;
         }
@@ -107,11 +107,11 @@ const FluentSidebar = {
                         <!-- User Menu (Dropup) -->
                         <div id="user-menu" class="hidden absolute bottom-full left-0 w-full mb-2 p-2 bg-white rounded-lg shadow-xl border border-[#EDEBE9] z-50">
                             <a href="/settings/index.html" class="block px-3 py-2 text-body rounded-md hover:bg-[#F3F2F1] transition-colors">
-                                <ion-icon name="settings-outline" class="mr-2"></ion-icon> Settings
+                                <ion-icon name="settings-outline" class="mr-2"></ion-icon> Pengaturan
                             </a>
                             <div class="h-px bg-[#EDEBE9] my-2"></div>
                             <button id="logout-btn" class="w-full text-left px-3 py-2 text-body rounded-md hover:bg-[#F3F2F1] transition-colors text-red-600">
-                                <ion-icon name="log-out-outline" class="mr-2"></ion-icon> Sign Out
+                                <ion-icon name="log-out-outline" class="mr-2"></ion-icon> Keluar
                             </button>
                         </div>
                     </div>
@@ -121,7 +121,7 @@ const FluentSidebar = {
             return `
                 <div class="px-3 pt-4 border-t border-[#EDEBE9]">
                     <a href="/auth/login.html" class="btn-fluent btn-primary-fluent w-full">
-                        Sign in
+                        Masuk
                     </a>
                 </div>
             `;

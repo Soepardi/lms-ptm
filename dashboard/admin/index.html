@@ -9,7 +9,7 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@3.1.0/dist/full.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../../assets/js/utils/supabase-client.js"></script>
     <link rel="stylesheet" href="../../assets/css/styles.css">
@@ -17,29 +17,37 @@
 
 <body class="bg-[#F3F2F1] text-[#323130]" x-data="studentDashboard">
     <div class="flex h-screen overflow-hidden">
-        <!-- Sidebar -->
+
         <aside class="w-[260px] bg-[#FAF9F8] border-r border-[#EDEBE9] flex flex-col pt-6 pb-4 shrink-0">
             <div class="px-6 mb-8">
-                <h2 class="text-body-large font-semibold text-[#323130]">EduPlatform</h2>
+                <a href="../../index.html" class="flex items-center gap-3 group">
+                    <img src="../../assets/images/logo.png" alt="Logo"
+                        class="w-8 h-8 object-contain transition-transform group-hover:scale-110">
+                    <span
+                        class="text-sm font-bold text-[#323130] leading-tight group-hover:text-[#0078D4] transition-colors">
+                        Pesantren Teknologi <br> <span
+                            class="text-[#605E5C] text-[10px] uppercase tracking-wide font-semibold">Majapahit</span>
+                    </span>
+                </a>
             </div>
             <div class="flex-1 overflow-y-auto px-3 space-y-1">
-                <div class="px-3 mb-2 text-caption font-semibold text-[#8A8886] uppercase tracking-wide">Learn</div>
+                <div class="px-3 mb-2 text-caption font-semibold text-[#8A8886] uppercase tracking-wide">Navigasi</div>
                 <a href="#" class="sidebar-link active">
-                    <ion-icon name="home-outline"></ion-icon> Home
+                    <ion-icon name="home-outline"></ion-icon> Beranda
                 </a>
                 <a href="../../course/catalog.html" class="sidebar-link">
-                    <ion-icon name="compass-outline"></ion-icon> Discover
+                    <ion-icon name="compass-outline"></ion-icon> Jelajahi
                 </a>
                 <a href="#" class="sidebar-link">
-                    <ion-icon name="albums-outline"></ion-icon> My Learning
+                    <ion-icon name="albums-outline"></ion-icon> Pembelajaran Saya
                 </a>
-                <div class="px-3 mt-6 mb-2 text-caption font-semibold text-[#8A8886] uppercase tracking-wide">Progress
+                <div class="px-3 mt-6 mb-2 text-caption font-semibold text-[#8A8886] uppercase tracking-wide">Progres
                 </div>
                 <a href="#" class="sidebar-link">
-                    <ion-icon name="time-outline"></ion-icon> Recent
+                    <ion-icon name="time-outline"></ion-icon> Terbaru
                 </a>
                 <a href="#" class="sidebar-link">
-                    <ion-icon name="bookmark-outline"></ion-icon> Bookmarks
+                    <ion-icon name="bookmark-outline"></ion-icon> Disimpan
                 </a>
             </div>
             <div class="px-3 pt-4 border-t border-[#EDEBE9]">
@@ -50,28 +58,27 @@
                     </div>
                     <div class="flex-1 min-w-0">
                         <div class="text-caption font-semibold truncate" x-text="profile?.full_name || 'User'"></div>
-                        <div class="text-caption text-[#8A8886]">Account</div>
+                        <div class="text-caption text-[#8A8886]">Akun</div>
                     </div>
                 </div>
             </div>
         </aside>
 
-        <!-- Main Content -->
         <main class="flex-1 overflow-y-auto">
-            <!-- Header -->
+
             <div class="border-b border-[#EDEBE9]">
                 <div class="max-w-6xl mx-auto px-10 py-10">
                     <p class="text-caption text-[#8A8886] uppercase tracking-wide font-semibold mb-2"
-                        x-text="new Date().toLocaleDateString('en-US', {weekday: 'long', month: 'long', day: 'numeric'})">
+                        x-text="new Date().toLocaleDateString('id-ID', {weekday: 'long', month: 'long', day: 'numeric'})">
                     </p>
-                    <h1 class="text-title">Welcome back</h1>
+                    <h1 class="text-title">Selamat Datang Kembali</h1>
                 </div>
             </div>
 
             <div class="max-w-6xl mx-auto px-10 py-12 space-y-12">
-                <!-- Continue Learning -->
+
                 <section x-show="enrollments.length > 0">
-                    <h2 class="text-subtitle mb-6">Continue Learning</h2>
+                    <h2 class="text-subtitle mb-6">Lanjutkan Belajar</h2>
                     <div class="card-fluent relative h-[340px] overflow-hidden bg-gradient-to-br from-[#323130] to-[#484644] cursor-pointer group"
                         x-show="enrollments[0]"
                         @click="window.location.href = `../../course/view.html?id=${enrollments[0]?.course?.id}`">
@@ -79,7 +86,7 @@
                             <div class="max-w-2xl">
                                 <div
                                     class="inline-block px-3 py-1 rounded-md bg-white/10 backdrop-blur-md text-white text-caption font-bold uppercase tracking-wide mb-3">
-                                    In Progress
+                                    Sedang Berjalan
                                 </div>
                                 <h3 class="text-white text-[32px] font-semibold leading-tight mb-3"
                                     x-text="enrollments[0]?.course?.title"></h3>
@@ -93,7 +100,7 @@
                                 </div>
                                 <button
                                     class="btn-fluent bg-white text-[#323130] hover:bg-white/90 px-6 py-3 font-semibold group-hover:scale-105">
-                                    Continue
+                                    Lanjut
                                     <ion-icon name="arrow-forward"></ion-icon>
                                 </button>
                             </div>
@@ -101,18 +108,17 @@
                     </div>
                 </section>
 
-                <!-- My Courses -->
                 <section>
                     <div class="flex items-end justify-between mb-6">
                         <div>
-                            <h2 class="text-subtitle mb-1">My Courses</h2>
+                            <h2 class="text-subtitle mb-1">Kelas Saya</h2>
                             <p class="text-body text-[#605E5C]"
-                                x-text="`${enrollments.length} ${enrollments.length === 1 ? 'course' : 'courses'} enrolled`">
+                                x-text="`${enrollments.length} ${enrollments.length === 1 ? 'Kelas' : 'Kelas'} diikuti`">
                             </p>
                         </div>
                         <a href="../../course/catalog.html"
                             class="text-[#0078D4] text-body font-semibold hover:underline">
-                            Discover More
+                            Lihat Lainnya
                         </a>
                     </div>
 
@@ -142,18 +148,17 @@
                             </a>
                         </template>
 
-                        <!-- Empty State -->
                         <div x-show="enrollments.length === 0" class="col-span-full py-16 text-center">
                             <div
                                 class="w-16 h-16 rounded-full bg-[#EDEBE9] flex items-center justify-center mx-auto mb-4">
                                 <ion-icon name="school-outline" class="text-3xl text-[#8A8886]"></ion-icon>
                             </div>
-                            <h3 class="text-body-large font-semibold text-[#323130] mb-2">Start Your Learning Journey
+                            <h3 class="text-body-large font-semibold text-[#323130] mb-2">Mulai Perjalanan Belajar Anda
                             </h3>
-                            <p class="text-body text-[#605E5C] mb-6">Explore our course catalog to begin</p>
+                            <p class="text-body text-[#605E5C] mb-6">Jelajahi Katalog Kelas kami untuk memulai</p>
                             <a href="../../course/catalog.html"
                                 class="btn-fluent btn-primary-fluent inline-flex items-center gap-2 px-6 py-3">
-                                Discover Courses
+                                Jelajahi Kelas
                                 <ion-icon name="arrow-forward"></ion-icon>
                             </a>
                         </div>

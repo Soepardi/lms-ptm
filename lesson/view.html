@@ -10,7 +10,7 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@3.1.0/dist/full.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../assets/js/utils/supabase-client.js"></script>
     <link rel="stylesheet" href="../assets/css/styles.css">
@@ -25,19 +25,17 @@
 <body class="bg-[#F3F2F1] text-[#323130]" x-data="lessonViewer" data-active-page="lesson">
 
     <div class="flex h-screen overflow-hidden">
-        <!-- Sidebar Component (dynamically loaded) -->
+
         <div id="app-sidebar"></div>
 
-        <!-- Main Content -->
         <main class="flex-1 overflow-y-auto">
 
-            <!-- Top Navigation / Breadcrumb -->
             <div class="bg-white border-b border-[#EDEBE9] sticky top-0 z-20">
                 <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
                     <div class="flex items-center gap-4">
                         <a :href="`../course/view.html?id=${course?.id}`"
                             class="w-8 h-8 rounded-full hover:bg-[#F3F2F1] flex items-center justify-center text-[#605E5C] transition-colors"
-                            title="Back to Course">
+                            title="Kembali ke Kelas">
                             <ion-icon name="arrow-back" class="text-xl"></ion-icon>
                         </a>
                         <div class="h-6 w-px bg-[#EDEBE9]"></div>
@@ -64,11 +62,10 @@
             <div class="max-w-6xl mx-auto px-6 py-8">
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-                    <!-- Left Column: Content -->
                     <div class="lg:col-span-2 space-y-6">
 
-                        <!-- Video Player -->
-                        <div class="bg-black rounded-xl overflow-hidden shadow-lg aspect-video relative group">
+                        <div
+                            class="bg-black rounded-xl overflow-hidden shadow-lg aspect-video relative group flex flex-col items-center justify-center">
                             <template x-if="loading">
                                 <div class="absolute inset-0 flex items-center justify-center text-white/50">
                                     <span class="loading loading-spinner loading-lg"></span>
@@ -77,7 +74,7 @@
 
                             <template x-if="!loading && lesson">
                                 <div class="w-full h-full">
-                                    <!-- YouTube Embed -->
+
                                     <template x-if="isYouTube(lesson.video_url)">
                                         <iframe :src="getYouTubeEmbed(lesson.video_url)" class="w-full h-full"
                                             frameborder="0"
@@ -86,13 +83,28 @@
                                         </iframe>
                                     </template>
 
-                                    <!-- Direct Video -->
-                                    <template x-if="!isYouTube(lesson.video_url) && lesson.video_url">
+                                    <template
+                                        x-if="!isYouTube(lesson.video_url) && lesson.video_url && !isAudio(lesson.video_url)">
                                         <video :src="lesson.video_url" class="w-full h-full" controls
                                             controlsList="nodownload"></video>
                                     </template>
 
-                                    <!-- No Video Placeholder -->
+                                    <template
+                                        x-if="!isYouTube(lesson.video_url) && lesson.video_url && isAudio(lesson.video_url)">
+                                        <div
+                                            class="w-full h-full flex flex-col items-center justify-center bg-[#201F1E] text-white">
+                                            <div
+                                                class="w-24 h-24 rounded-full bg-white/10 flex items-center justify-center mb-6 animate-pulse">
+                                                <ion-icon name="musical-notes" class="text-5xl text-white"></ion-icon>
+                                            </div>
+                                            <h3 class="text-xl font-semibold mb-2 px-8 text-center"
+                                                x-text="lesson.title"></h3>
+                                            <p class="text-sm text-white/60 mb-8">Audio Lesson</p>
+                                            <audio :src="lesson.video_url" controls class="w-3/4 max-w-md h-12"
+                                                controlsList="nodownload"></audio>
+                                        </div>
+                                    </template>
+
                                     <div x-show="!lesson.video_url"
                                         class="w-full h-full flex flex-col items-center justify-center text-white/60 bg-[#201F1E]">
                                         <ion-icon name="document-text-outline" class="text-6xl mb-4"></ion-icon>
@@ -102,7 +114,6 @@
                             </template>
                         </div>
 
-                        <!-- Content & Navigation -->
                         <div class="card-fluent p-8 space-y-6">
                             <div class="flex justify-between items-start">
                                 <h1 class="text-2xl font-bold text-[#323130]" x-text="lesson?.title"></h1>
@@ -110,7 +121,6 @@
 
                             <div class="prose max-w-none text-[#323130]" x-html="formatContent(lesson?.content)"></div>
 
-                            <!-- Attachment Section -->
                             <div x-show="lesson?.attachment_url"
                                 class="mt-6 p-4 bg-[#F3F2F1] rounded-lg border border-[#EDEBE9] flex items-center justify-between">
                                 <div class="flex items-center gap-3">
@@ -131,7 +141,6 @@
                                 </a>
                             </div>
 
-                            <!-- Navigation Buttons -->
                             <div class="flex items-center justify-between pt-8 border-t border-[#EDEBE9] mt-8">
                                 <button @click="prevLesson" :disabled="!prevLessonId"
                                     class="btn-fluent btn-secondary-fluent text-sm px-4 py-2 h-auto min-h-0 disabled:opacity-50 disabled:cursor-not-allowed">
@@ -149,7 +158,6 @@
 
                     </div>
 
-                    <!-- Right Column: Module List -->
                     <div class="lg:col-span-1 space-y-6">
                         <div
                             class="card-fluent p-0 overflow-hidden flex flex-col max-h-[calc(100vh-140px)] sticky top-24">
@@ -189,7 +197,6 @@
         </main>
     </div>
 
-    <!-- Scripts -->
     <script src="../assets/js/components/sidebar.js"></script>
     <script>
         document.addEventListener('alpine:init', () => {
@@ -209,7 +216,7 @@
                     const lessonId = urlParams.get('id');
 
                     if (!lessonId) {
-                        window.location.href = '../course/catalog.html';
+                        window.location.href = '../Kelas/catalog.html';
                         return;
                     }
 
@@ -232,15 +239,15 @@
                         if (error) throw error;
                         this.lesson = lesson;
 
-                        // 2. Fetch Module and Course info (Separate queries to avoid 400 bad request with deep nesting)
+                        // 2. Fetch Module and Kelas info (Separate queries to avoid 400 bad request with deep nesting)
                         const { data: module } = await supabase
                             .from('modules')
-                            .select('*, courses(*)')
+                            .select('*, course:courses(*)')
                             .eq('id', lesson.module_id)
                             .single();
 
                         if (module) {
-                            this.course = module.courses; // Assuming mapped correctly
+                            this.course = module.course; // Assuming mapped correctly
 
                             // 3. Fetch all lessons in this module for navigation/sidebar
                             const { data: lessons } = await supabase
@@ -314,6 +321,12 @@
 
                 isYouTube(url) {
                     return url && (url.includes('youtube.com') || url.includes('youtu.be'));
+                },
+
+                isAudio(url) {
+                    if (!url) return false;
+                    const audioExtensions = ['.mp3', '.wav', '.ogg', '.m4a', '.aac'];
+                    return audioExtensions.some(ext => url.split('?')[0].toLowerCase().endsWith(ext));
                 },
 
                 getYouTubeEmbed(url) {
